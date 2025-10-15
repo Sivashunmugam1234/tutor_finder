@@ -1,11 +1,10 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register';
-import TeacherProfile from './pages/TeacherProfile';
-import TeacherDashboard from './pages/TeacherDashboard';
+import Home from './pages/Home';
+// import TeacherProfile from './pages/TeacherProfile';
+// import TeacherDashboard from './pages/TeacherDashboard';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -17,9 +16,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* <Route path="/register" element={<Register />} />
             <Route path="/teacher/:id" element={<TeacherProfile />} />
-            <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+            <Route path="/teacher/dashboard" element={<TeacherDashboard />} /> */}
             {/* Add Student Dashboard route here */}
           </Routes>
         </main>
