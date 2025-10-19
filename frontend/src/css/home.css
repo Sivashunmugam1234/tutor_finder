@@ -1,0 +1,732 @@
+/* home.css */
+
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.home-search-container {
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.home-search {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.home-search:focus {
+  border-color: #6366f1;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+.category-card {
+  padding: 30px;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+.category-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.category-divider {
+  width: 50px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+.teacher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 2rem;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .teacher-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Hero Section */
+.hero-section {
+  background-color: #e3f2fd;
+  padding: 60px 50px;
+}
+
+.hero-title {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+  max-width: 800px;
+  margin: 0 auto 30px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.demo-button {
+  padding: 15px 30px;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.stats-container {
+  display: flex;
+  gap: 30px;
+  color: #333;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+}
+
+.stat-divider {
+  border-left: 2px solid #999;
+  padding-left: 30px;
+}
+
+.stat-number {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.stat-label {
+  margin-left: 5px;
+}
+
+/* Categories and Teachers */
+.home-container {
+  padding: 40px 50px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.category-card {
+  padding: 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+.category-title {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.category-divider {
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin-top: 15px;
+}
+
+.teacher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* Live Classes Section */
+.live-classes-section {
+  padding: 60px 50px;
+  background-color: #f9f9f9;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: #333;
+  font-weight: 600;
+}
+
+.live-classes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.live-class-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.live-class-image-container {
+  position: relative;
+}
+
+.live-class-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.live-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #ff1744;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.live-class-content {
+  padding: 20px;
+}
+
+.live-class-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 600;
+  min-height: 50px;
+}
+
+.live-class-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.stars {
+  color: #ffa000;
+  font-size: 16px;
+}
+
+.reviews {
+  font-size: 14px;
+  color: #666;
+}
+
+.live-class-date {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.class-starts-label {
+  font-size: 14px;
+  color: #00c853;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.timer-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.timer-item {
+  text-align: center;
+}
+
+.timer-number {
+  font-weight: bold;
+  font-size: 24px;
+  color: #333;
+}
+
+.timer-label {
+  color: #999;
+  font-size: 12px;
+}
+
+.register-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.view-all-container {
+  text-align: right;
+  margin-top: 20px;
+  max-width: 1400px;
+  margin: 20px auto 0;
+}
+
+.view-all-link {
+  color: #0066ff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Featured Profiles Section */
+.featured-profiles-section {
+  padding: 60px 50px;
+  background-color: #e8f4f8;
+}
+
+.featured-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.featured-profile-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.featured-profile-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.profile-subject {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.profile-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.profile-rating .stars {
+  color: #ffa000;
+  font-size: 14px;
+}
+
+.profile-rating .reviews {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Student Reviews Section */
+.student-reviews-section {
+  padding: 60px 50px;
+  background-color: #e8f4f8;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.review-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.review-teacher-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-teacher-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.review-stars {
+  color: #ffa000;
+  font-size: 14px;
+}
+
+.review-meta {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.review-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.review-more-link {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .live-classes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featured-profiles-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 40px 20px;
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .search-container {
+    flex-direction: column;
+  }
+
+  .stats-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .stat-divider {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .live-classes-grid,
+  .featured-profiles-grid,
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+}
+/* Category Header */
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.add-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background-color 0.3s;
+}
+
+.add-category-btn:hover {
+  background-color: #0052cc;
+}
+
+.plus-icon {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Add Category Form */
+.add-category-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.category-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 15px;
+  outline: none;
+}
+
+.category-input:focus {
+  border-color: #0066ff;
+}
+
+.btn-add {
+  padding: 12px 25px;
+  background-color: #00c853;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.btn-cancel {
+  padding: 12px 25px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* Remove Category Button */
+.remove-category-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.remove-category-btn:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.category-card {
+  position: relative;
+}
+
+/* Gradient Colors */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to));
+}
+
+.from-purple-500 { --tw-gradient-from: #8b5cf6; }
+.to-indigo-400 { --tw-gradient-to: #818cf8; }
+.from-cyan-400 { --tw-gradient-from: #22d3ee; }
+.to-blue-400 { --tw-gradient-to: #60a5fa; }
+.from-pink-400 { --tw-gradient-from: #f472b6; }
+.to-rose-500 { --tw-gradient-to: #f43f5e; }
+.from-green-400 { --tw-gradient-from: #4ade80; }
+.to-emerald-500 { --tw-gradient-to: #10b981; }
+.from-orange-400 { --tw-gradient-from: #fb923c; }
+.to-red-500 { --tw-gradient-to: #ef4444; }
+.from-yellow-400 { --tw-gradient-from: #facc15; }
+.to-orange-500 { --tw-gradient-to: #f97316; }
+.from-teal-400 { --tw-gradient-from: #2dd4bf; }
+.to-cyan-500 { --tw-gradient-to: #06b6d4; }
+.from-indigo-500 { --tw-gradient-from: #6366f1; }
+.to-purple-600 { --tw-gradient-to: #9333ea; }
+
+/* Classes Section */
+.classes-section {
+  padding: 60px 50px;
+  background-color: #f9f9f9;
+}
+
+.classes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.class-filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.filter-btn:hover {
+  border-color: #0066ff;
+}
+
+.filter-btn.active {
+  background-color: #0066ff;
+  color: white;
+  border-color: #0066ff;
+}
+
+.filter-btn.active.live {
+  background-color: #ff1744;
+  border-color: #ff1744;
+}
+
+.filter-btn.active.offline {
+  background-color: #00c853;
+  border-color: #00c853;
+}
+
+/* Class Badge */
+.class-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.class-badge.live {
+  background-color: #ff1744;
+}
+
+.class-badge.offline {
+  background-color: #00c853;
+}
+
+/* Class Location */
+.live-class-location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
