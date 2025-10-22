@@ -1,27 +1,119 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["student", "teacher"], required: true },
-    profilePicture: { type: String, default: "default_avatar_url" }, // From S3
-    teacherProfile: {
-      subjects: [String],
-      hourlyRate: Number,
-      availability: [String], // e.g., ["Monday 9am-12pm", "Wednesday 2pm-5pm"]
-      bio: String,
-      averageRating: { type: Number, default: 0 },
-    },
+const userSchema = new mongoose.Schema({
+  name: { 
+    type: String, 
+    required: [true, 'Please add a name'],
+    trim: true,
+    minlength: [2, 'Name must be at least 2 characters']
   },
-  { timestamps: true }
-);
+  email: { 
+    type: String, 
+    required: [true, 'Please add an email'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+  },
+  password: { 
+    type: String, 
+    required: [true, 'Please add a password'],
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false
+  },
+  role: { 
+    type: String, 
+    enum: ['student', 'teacher'], 
+    required: true 
+  },
+  profilePicture: { 
+    type: String, 
+    default: 'https://via.placeholder.com/150'
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  location: {
+    city: String,
+    state: String,
+    country: String
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  teacherProfile: {
+    subjects: {
+      type: [String],
+      default: []
+    },
+    qualifications: {
+      type: [String],
+      default: []
+    },
+    experience: {
+      type: Number,
+      min: 0,
+      default: 0
+    },
+    hourlyRate: {
+      type: Number,
+      min: 0,
+      default: 0
+    },
+    availability: {
+      type: [String],
+      default: []
+    },
+    bio: {
+      type: String,
+      maxlength: [1000, 'Bio cannot exceed 1000 characters'],
+      default: ''
+    },
+    averageRating: { 
+      type: Number, 
+      default: 0,
+      min: 0,
+      max: 5
+    },
+    totalReviews: {
+      type: Number,
+      default: 0
+    },
+    totalStudents: {
+      type: Number,
+      default: 0
+    },
+    languages: {
+      type: [String],
+      default: []
+    },
+    teachingMode: {
+      type: [String],
+      enum: ['online', 'offline', 'both'],
+      default: ['both']
+    }
+  }
+}, { 
+  timestamps: true 
+});
+
+// Indexes for better query performance
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ 'teacherProfile.subjects': 1 });
+userSchema.index({ 'teacherProfile.averageRating': -1 });
+userSchema.index({ 'location.city': 1 });
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
   const salt = await bcrypt.genSalt(10);
@@ -33,5 +125,12 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+// Method to get public profile
+userSchema.methods.getPublicProfile = function() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
+
+const User = mongoose.model('User', userSchema);
 module.exports = User;

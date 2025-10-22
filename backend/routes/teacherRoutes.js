@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { getAllTeachers, getTeacherById, updateTeacherProfile } = require('../controllers/teacherController');
+const { 
+  getAllTeachers, 
+  getTeacherById, 
+  updateTeacherProfile,
+  getMyReviews 
+} = require('../controllers/teacherController');
 const { protect, isTeacher } = require('../middleware/authMiddleware');
+const { teacherProfileValidation } = require('../middleware/validationMiddleware');
+const upload = require('../config/s3Upload');
 
-// Note: Configure S3 upload middleware here
-const upload = require('../config/s3Upload'); // You'll create this file
-
-router.route('/').get(getAllTeachers);
-router.route('/:id').get(getTeacherById);
-router.route('/profile').put(protect, isTeacher, upload.single('profilePicture'), updateTeacherProfile);
+router.get('/', getAllTeachers);
+router.get('/my-reviews', protect, isTeacher, getMyReviews);
+router.get('/:id', getTeacherById);
+router.put('/profile', protect, isTeacher, upload.single('profilePicture'), teacherProfileValidation, updateTeacherProfile);
 
 module.exports = router;
