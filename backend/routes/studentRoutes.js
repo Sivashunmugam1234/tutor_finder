@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { createTeacherReview } = require('../controllers/studentController');
-const { protect } = require('../middleware/authMiddleware');
+const { 
+  createTeacherReview,
+  getMyReviews,
+  updateReview,
+  deleteReview
+} = require('../controllers/studentController');
+const { protect, isStudent } = require('../middleware/authMiddleware');
+const { reviewValidation } = require('../middleware/validationMiddleware');
 
-router.route('/teachers/:id/reviews').post(protect, createTeacherReview);
+router.post('/teachers/:id/reviews', protect, isStudent, reviewValidation, createTeacherReview);
+router.get('/my-reviews', protect, isStudent, getMyReviews);
+router.put('/reviews/:id', protect, isStudent, updateReview);
+router.delete('/reviews/:id', protect, isStudent, deleteReview);
 
 module.exports = router;
