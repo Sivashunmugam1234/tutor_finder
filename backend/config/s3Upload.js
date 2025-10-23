@@ -1,5 +1,5 @@
 const config = require('./env');
-const aws = require('aws-sdk');
+const { S3Client } = require('@aws-sdk/client-s3');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
@@ -11,20 +11,29 @@ const isS3Configured = config.AWS_ACCESS_KEY_ID &&
 let upload;
 
 if (isS3Configured) {
+  console.log("the s3 is configured");
+  
   // Configure AWS S3
-  aws.config.update({
-    secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-    accessKeyId: config.AWS_ACCESS_KEY_ID,
+  // aws.config.update({
+  //   secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+  //   accessKeyId: config.AWS_ACCESS_KEY_ID,
+  //   region: config.AWS_S3_BUCKET_REGION,
+  // });
+  const s3 = new S3Client({
+    credentials: {
+      accessKeyId: config.AWS_ACCESS_KEY_ID,
+      secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+    },
     region: config.AWS_S3_BUCKET_REGION,
   });
 
-  const s3 = new aws.S3();
+  // const s3 = new aws.S3();
 
   upload = multer({
     storage: multerS3({
       s3: s3,
       bucket: config.AWS_S3_BUCKET_NAME,
-      acl: 'public-read',
+      // acl: 'public-read',
       contentType: multerS3.AUTO_CONTENT_TYPE,
       metadata: function (req, file, cb) {
         cb(null, { fieldName: file.fieldname });
@@ -44,6 +53,8 @@ if (isS3Configured) {
     }
   });
 } else {
+  console.log("the s3 is not configured");
+
   // Use local storage if S3 is not configured
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
