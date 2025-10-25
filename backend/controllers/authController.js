@@ -23,6 +23,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -55,6 +56,7 @@ exports.loginUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -91,7 +93,11 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
   if (user) {
     user.name = req.body.name || user.name;
-    user.phone = req.body.phone || user.phone;
+    
+    // Handle phone number properly - allow empty string to clear the field
+    if (req.body.hasOwnProperty('phone')) {
+      user.phone = req.body.phone;
+    }
     
     if (req.body.location) {
       user.location = { ...user.location, ...req.body.location };
@@ -99,6 +105,12 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
     if (req.body.password) {
       user.password = req.body.password;
+    }
+
+    // Handle profile picture upload if file is provided
+    if (req.file) {
+      const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+      user.profilePicture = profilePictureUrl;
     }
 
     const updatedUser = await user.save();

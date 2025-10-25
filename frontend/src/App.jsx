@@ -6,6 +6,7 @@ import Home from './pages/home.jsx';
 import Register from './pages/Register.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import MyReviews from './pages/reviews/MyReviews.jsx';
+import StudentReviews from './pages/student/StudentReviews.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AuthRedirect from './components/AuthRedirect.jsx';
 import TeacherDetails from './pages/teacher/TeacherDetails.jsx';
@@ -57,6 +58,16 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Student Reviews */}
+          <Route
+            path="/my-reviews"
+            element={
+              <ProtectedRoute>
+                <StudentReviews />
               </ProtectedRoute>
             }
           />

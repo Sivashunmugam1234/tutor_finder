@@ -1,14 +1,16 @@
 // File: src/pages/teachers/TeacherProfileEdit.jsx
 import { useState, useEffect, useContext } from "react";
 import  AuthContext  from "../../context/AuthContext";
-import API from "../../api/axios"; // ✅ using API consistently
+import API from "../../api/axios";
 import { toast } from "react-toastify";
+import { fixS3ImageUrl } from "../../utils/imageUtils";
 
 const TeacherProfileEdit = () => {
   const { user, updateUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -77,7 +79,15 @@ const TeacherProfileEdit = () => {
   };
 
   const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePicture(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -181,9 +191,14 @@ const TeacherProfileEdit = () => {
       console.log('Response received:', response.data);
 
       // Update user context with new data
-      const updatedUser = { ...user, ...response.data.data };
+      const updatedUser = response.data.data;
       updateUser(updatedUser);
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      
+      // Reset form state
+      setProfilePicture(null);
+      setImagePreview(null);
+      
       toast.success("Profile updated successfully!");
     } catch (error) {
       console.error('Profile update error:', error);
@@ -231,9 +246,12 @@ const TeacherProfileEdit = () => {
               </label>
               <div className="flex items-center gap-4">
                 <img
-                  src={profilePicture ? URL.createObjectURL(profilePicture) : (user?.profilePicture || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")}
+                  src={imagePreview || fixS3ImageUrl(user?.profilePicture) || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
                   alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                  onError={(e) => {
+                    e.target.src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                  }}
                 />
                 <input
                   type="file"

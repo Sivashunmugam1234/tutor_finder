@@ -4,6 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
 import { Edit, User, Mail, Phone, MapPin, BookOpen, Clock, Star, Users } from 'lucide-react';
+import { fixS3ImageUrl } from '../../utils/imageUtils';
 
 const TeacherProfileManage = () => {
   const { user, updateUser } = useContext(AuthContext);
@@ -186,17 +187,21 @@ const TeacherProfileManage = () => {
       
       console.log('Server response:', response.data);
 
-      const updatedUser = { ...user, ...response.data.data };
-      updateUser(updatedUser);
-      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      const updatedUser = response.data.data;
+      // Preserve the token from the current user
+      const currentUserInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const userWithToken = { ...updatedUser, token: currentUserInfo.token };
+      
+      updateUser(userWithToken);
+      localStorage.setItem('userInfo', JSON.stringify(userWithToken));
       
       toast.success('Profile updated successfully!');
       setIsEditing(false);
       setProfilePicture(null);
       setImagePreview(null);
       
-      // Refresh the page to show updated image
-      window.location.reload();
+      // Refresh profile data to show updated image
+      await fetchProfile();
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to update profile';
       toast.error(errorMessage);
@@ -215,54 +220,67 @@ const TeacherProfileManage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-12 text-center">
-            <img
-              src={imagePreview || (imageError ? "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" : user.profilePicture) || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-              alt={user.name}
-              className="w-32 h-32 rounded-full mx-auto border-4 border-white shadow-lg object-cover"
-              onError={() => setImageError(true)}
-            />
-            <h1 className="mt-4 text-3xl font-bold text-white">{user.name}</h1>
-            <p className="mt-2 text-blue-100">{user.email}</p>
-            <span className="inline-block mt-3 px-4 py-1 rounded-full text-sm font-semibold bg-yellow-400 text-gray-900">
-              Tutor
-            </span>
-            
-            {canEdit && (
-              <div className="mt-4">
-                {!isEditing ? (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setError('');
-                      setImagePreview(null);
-                      setProfilePicture(null);
-                      fetchProfile(); // Reset form data
-                    }}
-                    className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                  >
-                    Cancel Edit
-                  </button>
-                )}
-              </div>
-            )}
+<div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mb-8 rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <div className="relative">
+          <img
+            src={imagePreview || fixS3ImageUrl(user.profilePicture) || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+            alt={user.name}
+            className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
+            onError={(e) => {
+              e.target.src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            }}
+          />
+          <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
+            <div className="w-2 h-2 bg-white rounded-full"></div>
           </div>
         </div>
+        <div className="ml-6">
+          <h1 className="text-4xl font-bold mb-2"> {user.name}</h1>
+          <p className="text-blue-100 text-lg">{user.email}</p>
+          <span className="inline-flex items-center mt-3 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 shadow-lg">
+            Professional Tutor
+          </span>
+        </div>
+      </div>
+
+      {canEdit && (
+        <div>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="group inline-flex items-center px-8 py-3 bg-white text-blue-600 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-xl"
+            >
+              <Edit className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+              Edit Profile
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setIsEditing(false);
+                setError('');
+                setImagePreview(null);
+                setProfilePicture(null);
+                fetchProfile(); // Reset form data
+              }}
+              className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
 
         {/* Profile Content */}
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           {error && (
             <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
               <p className="font-medium">Error:</p>
@@ -276,38 +294,56 @@ const TeacherProfileManage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h2>
               
               {/* Profile Picture */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Picture
+              {/* Profile Picture Upload */}
+              <div className="text-center">
+                <div className="mb-4">
+                  <img
+                    src={imagePreview || fixS3ImageUrl(user.profilePicture) || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                    alt="Profile Preview"
+                    className="w-32 h-32 rounded-full mx-auto border-4 border-gray-200 shadow-lg object-cover"
+                    onError={(e) => {
+                      e.target.src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                    }}
+                  />
+                </div>
+                <label className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                  Change Profile Picture
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
               </div>
 
               {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your full name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    Phone Number
+                  </label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your phone number"
                   />
                 </div>
               </div>
@@ -315,159 +351,311 @@ const TeacherProfileManage = () => {
               {/* Location */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    City
+                  </label>
                   <input
                     type="text"
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your city"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    State
+                  </label>
                   <input
                     type="text"
                     name="state"
                     value={formData.state}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your state"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    Country
+                  </label>
                   <input
                     type="text"
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your country"
                   />
                 </div>
               </div>
 
               {/* Teaching Information */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subjects</label>
-                <input
-                  type="text"
-                  name="subjects"
-                  value={formData.subjects}
-                  onChange={handleChange}
-                  placeholder="e.g., Mathematics, Physics, Chemistry"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                  Teaching Information
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                      Subjects (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      name="subjects"
+                      value={formData.subjects}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="e.g., Mathematics, Physics, Chemistry"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                      Qualifications (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      name="qualifications"
+                      value={formData.qualifications}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="e.g., M.Sc Mathematics, B.Ed"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                      <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                      Experience (years)
+                    </label>
+                    <input
+                      type="number"
+                      name="experience"
+                      value={formData.experience}
+                      onChange={handleChange}
+                      min="0"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Years of teaching experience"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                      Languages (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      name="languages"
+                      value={formData.languages}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="e.g., English, Hindi, Spanish"
+                    />
+                  </div>
+                </div>
+                
+                {/* Teaching Mode */}
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-3 block">
+                    Teaching Mode
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {['online', 'offline', 'hybrid'].map((mode) => (
+                      <label key={mode} className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.teachingMode.includes(mode)}
+                          onChange={() => handleTeachingModeChange(mode)}
+                          className="sr-only"
+                        />
+                        <div className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                          formData.teachingMode.includes(mode)
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                        }`}>
+                          <span className="font-medium capitalize">{mode}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Bio */}
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    placeholder="Tell students about yourself, your teaching style, and what makes you unique..."
+                  />
+                </div>
+                
+                {/* Availability */}
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Availability (one per line)
+                  </label>
+                  <textarea
+                    name="availability"
+                    value={formData.availability}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    placeholder="Monday 9:00 AM - 5:00 PM&#10;Tuesday 10:00 AM - 6:00 PM&#10;Wednesday 9:00 AM - 3:00 PM"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Experience (years)</label>
-                <input
-                  type="number"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                <textarea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  rows="4"
-                  maxLength="1000"
-                  placeholder="Tell students about yourself..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div className="flex gap-4">
+              {/* Submit Button */}
+              <div className="text-center pt-6">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium disabled:opacity-50"
+                  className="px-12 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-3"></div>
+                      Updating Profile...
+                    </div>
+                  ) : (
+                    'Update Profile'
+                  )}
                 </button>
               </div>
             </form>
           ) : (
             /* Read-only View */
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Details</h2>
+            <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+                Profile Overview
+              </h2>
               
+              {/* Basic Information Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center">
-                  <User className="w-5 h-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-600">Name</p>
-                    <p className="font-medium">{user.name || 'Not provided'}</p>
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                  <div className="flex items-center mb-3">
+                    <h3 className="text-lg font-semibold text-blue-800">Personal Info</h3>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-blue-700"><span className="font-medium">Name:</span> {user.name || 'Not provided'}</p>
+                    <p className="text-blue-700"><span className="font-medium">Email:</span> {user.email}</p>
+                    <p className="text-blue-700"><span className="font-medium">Phone:</span> {user.phone || 'Not provided'}</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center">
-                  <Mail className="w-5 h-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium">{user.email}</p>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                  <div className="flex items-center mb-3">
+                    <h3 className="text-lg font-semibold text-green-800">Location</h3>
                   </div>
-                </div>
-                
-                <div className="flex items-center">
-                  <Phone className="w-5 h-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-medium">{user.phone || 'Not provided'}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center">
-                  <MapPin className="w-5 h-5 text-gray-400 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-600">Location</p>
-                    <p className="font-medium">{user.location?.city || 'Not provided'}</p>
+                  <div className="space-y-2">
+                    <p className="text-green-700"><span className="font-medium">City:</span> {user.location?.city || 'Not specified'}</p>
+                    <p className="text-green-700"><span className="font-medium">State:</span> {user.location?.state || 'Not specified'}</p>
+                    <p className="text-green-700"><span className="font-medium">Country:</span> {user.location?.country || 'Not specified'}</p>
                   </div>
                 </div>
               </div>
 
               {user.teacherProfile && (
-                <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Teaching Information</h3>
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-3">
+                    Teaching Information
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                      <div className="flex items-center mb-3">
+                        <h4 className="text-lg font-semibold text-purple-800">Subjects</h4>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {user.teacherProfile.subjects?.length > 0 ? (
+                          user.teacherProfile.subjects.map((subject, index) => (
+                            <span key={index} className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-medium">
+                              {subject}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-purple-600">Not specified</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
+                      <div className="flex items-center mb-3">
+                        <h4 className="text-lg font-semibold text-orange-800">Qualifications</h4>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {user.teacherProfile.qualifications?.length > 0 ? (
+                          user.teacherProfile.qualifications.map((qualification, index) => (
+                            <span key={index} className="px-3 py-1 bg-orange-200 text-orange-800 rounded-full text-sm font-medium">
+                              {qualification}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-orange-600">Not specified</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-xl border border-teal-200">
+                      <div className="flex items-center mb-3">
+                        <h4 className="text-lg font-semibold text-teal-800">Experience</h4>
+                      </div>
+                      <p className="text-2xl font-bold text-teal-700">{user.teacherProfile.experience || 0} years</p>
+                    </div>
+                  </div>
+                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-center">
-                      <BookOpen className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-600">Subjects</p>
-                        <p className="font-medium">{user.teacherProfile.subjects?.join(', ') || 'Not specified'}</p>
+                    <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-6 rounded-xl border border-indigo-200">
+                      <div className="flex items-center mb-3">
+                        <h4 className="text-lg font-semibold text-indigo-800">Rating & Mode</h4>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-indigo-700"><span className="font-medium">Rating:</span> {user.teacherProfile.averageRating?.toFixed(1) || '0.0'} ⭐</p>
+                        <div className="flex flex-wrap gap-2">
+                          {user.teacherProfile.teachingMode?.length > 0 ? (
+                            user.teacherProfile.teachingMode.map((mode, index) => (
+                              <span key={index} className="px-3 py-1 bg-indigo-200 text-indigo-800 rounded-full text-sm font-medium capitalize">
+                                {mode}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-indigo-600">Not specified</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center">
-                      <Clock className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-600">Experience</p>
-                        <p className="font-medium">{user.teacherProfile.experience || 0} years</p>
+                    <div className="bg-gradient-to-r from-pink-50 to-pink-100 p-6 rounded-xl border border-pink-200">
+                      <div className="flex items-center mb-3">
+                        <h4 className="text-lg font-semibold text-pink-800">Languages</h4>
                       </div>
-                    </div>
-                    
-
-                    
-                    <div className="flex items-center">
-                      <Star className="w-5 h-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-600">Rating</p>
-                        <p className="font-medium">{user.teacherProfile.averageRating?.toFixed(1) || '0.0'} ⭐</p>
+                      <div className="flex flex-wrap gap-2">
+                        {user.teacherProfile.languages?.length > 0 ? (
+                          user.teacherProfile.languages.map((language, index) => (
+                            <span key={index} className="px-3 py-1 bg-pink-200 text-pink-800 rounded-full text-sm font-medium">
+                              {language}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-pink-600">Not specified</span>
+                        )}
                       </div>
                     </div>
                   </div>
                   
                   {user.teacherProfile.bio && (
-                    <div className="mt-6">
-                      <p className="text-sm text-gray-600 mb-2">Bio</p>
-                      <p className="text-gray-800">{user.teacherProfile.bio}</p>
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
+                      <h4 className="text-lg font-semibold text-gray-800 mb-3">Bio</h4>
+                      <p className="text-gray-700 leading-relaxed">{user.teacherProfile.bio}</p>
                     </div>
                   )}
                 </div>

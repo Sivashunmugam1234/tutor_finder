@@ -48,9 +48,6 @@ const Home = () => {
                
               <span className="block text-yellow-400">Find My Tutor</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              Connect with expert tutors worldwide. Learn at your pace, achieve your goals, and unlock your potential.
-            </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
               <Link 
@@ -70,26 +67,6 @@ const Home = () => {
                   Become a Tutor
                 </Link>
               )}
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.totalTutors}+</div>
-                <div className="text-blue-200">Expert Tutors</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.totalStudents}+</div>
-                <div className="text-blue-200">Happy Students</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.totalLessons}+</div>
-                <div className="text-blue-200">Lessons Completed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.avgRating}★</div>
-                <div className="text-blue-200">Average Rating</div>
-              </div>
             </div>
           </div>
         </div>
@@ -201,9 +178,6 @@ const Home = () => {
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Ready to <span className="text-yellow-400">Transform</span> Your Learning?
               </h2>
-              <p className="text-xl md:text-2xl mb-10 text-blue-100 leading-relaxed">
-                Join thousands of students who have already discovered their perfect tutor and achieved their learning goals
-              </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Link 

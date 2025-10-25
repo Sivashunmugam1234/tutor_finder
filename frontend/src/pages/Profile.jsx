@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import  AuthContext  from "../context/AuthContext";
 import API from "../api/axios";
 import { toast } from "react-toastify";
+import { fixS3ImageUrl } from "../utils/imageUtils";
 
 const Profile = () => {
   const { user, updateUser } = useContext(AuthContext);
@@ -159,19 +160,13 @@ const Profile = () => {
             <div className="relative inline-block">
               <div className="relative w-32 h-32">
                 <img
-                  src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
+                  src={imagePreview || fixS3ImageUrl(user.profilePicture) || "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"}
                   alt={user.name}
-                  className="w-32 h-32 rounded-full absolute inset-0 border-4 border-white shadow-lg object-cover"
+                  className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                  onError={(e) => {
+                    e.target.src = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+                  }}
                 />
-                {(imagePreview || (user.profilePicture && user.profilePicture !== "https://cdn-icons-png.flaticon.com/512/3135/3135768.png")) && (
-                  <img
-                    src={imagePreview || user.profilePicture}
-                    alt={user.name}
-                    className="w-32 h-32 rounded-full absolute inset-0 border-4 border-white shadow-lg object-cover opacity-0 transition-opacity duration-300"
-                    onLoad={(e) => e.target.style.opacity = '1'}
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                )}
               </div>
               {isEditing && (
                 <>

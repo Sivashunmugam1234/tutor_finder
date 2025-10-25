@@ -2,17 +2,19 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { getProfilePicture } from "../utils/imageUtils";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [profilePicKey, setProfilePicKey] = useState(0);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
-    navigate("/");
+    navigate("/login");
   };
 
   const isLoggedIn = isAuthenticated || !!user;
@@ -20,8 +22,15 @@ const Navbar = () => {
   // Default profile image (for students or teachers without photo)
   const defaultProfilePic = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-  // Use uploaded image if available (check both photoURL and profilePicture fields)
-  const profilePic = imageError ? defaultProfilePic : (user?.photoURL || user?.profilePicture || defaultProfilePic);
+  // Use uploaded image only for teachers, default for students
+  const profilePic = imageError ? defaultProfilePic : 
+    (user?.role === 'teacher' ? getProfilePicture(user, defaultProfilePic) : defaultProfilePic);
+  
+  // Reset image error when user changes
+  React.useEffect(() => {
+    setImageError(false);
+    setProfilePicKey(prev => prev + 1);
+  }, [user?.profilePicture]);
   
   // Debug: Log the profile picture URL
   console.log('Navbar - User:', user);
@@ -60,10 +69,20 @@ const Navbar = () => {
                   </Link>
                 )}
 
+                {user?.role === "student" && (
+                  <Link
+                    to="/my-reviews"
+                    className="text-gray-700 hover:text-blue-600 font-medium"
+                  >
+                    My Reviews
+                  </Link>
+                )}
+
                 {/* Profile Icon */}
                 <div className="relative flex items-center space-x-3">
                   <Link to="/profile">
                     <img
+                      key={profilePicKey}
                       src={profilePic}
                       alt="Profile"
                       className="w-10 h-10 rounded-full object-cover border-2 border-blue-500 cursor-pointer hover:scale-105 transition"
@@ -161,6 +180,16 @@ const Navbar = () => {
                   </Link>
                 )}
 
+                {user?.role === "student" && (
+                  <Link
+                    to="/my-reviews"
+                    className="block text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Reviews
+                  </Link>
+                )}
+
                 {/* Profile in mobile menu */}
                 <Link
                   to="/profile"
@@ -168,6 +197,7 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <img
+                    key={profilePicKey}
                     src={profilePic}
                     alt="Profile"
                     className="w-10 h-10 rounded-full object-cover border border-blue-400"

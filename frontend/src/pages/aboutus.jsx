@@ -73,33 +73,37 @@ const AboutUs = () => {
   return (
     <div className="font-sans text-gray-800 overflow-x-hidden">
       {/* Hero Section */}
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center relative overflow-hidden text-white text-center">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
-          }}></div>
-        </div>
-        
-        <div className="relative z-10 max-w-4xl px-5">
-          <h1 className="text-6xl md:text-8xl font-extrabold mb-4 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-            About Gurukulam
-          </h1>
-          <p className="text-2xl md:text-4xl font-light mb-8 opacity-90">
-            Found My Tutor - Connecting Learners with Expert Educators
-          </p>
-          <div className="text-lg italic opacity-80">
-            <span>Empowering Education Through Technology</span>
-          </div>
-        </div>
+<div className="min-h-[45vh] bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center relative overflow-hidden text-white text-center">
+  {/* Subtle dotted background */}
+  <div className="absolute inset-0 opacity-5">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundImage:
+          "url(\"data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/svg%3E\")",
+      }}
+    ></div>
+  </div>
 
-        {/* Floating Elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 text-5xl opacity-70 animate-bounce"></div>
-          <div className="absolute top-1/3 right-1/4 text-5xl opacity-70 animate-pulse"></div>
-          <div className="absolute bottom-1/3 left-1/3 text-5xl opacity-70 animate-bounce delay-100"></div>
-          <div className="absolute bottom-1/4 right-1/3 text-5xl opacity-70 animate-pulse delay-200"></div>
-        </div>
-      </div>
+  {/* Main content */}
+  <div className="relative z-10 max-w-2xl px-5">
+    <h1 className="text-5xl md:text-6xl font-extrabold mb-3 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+      About Found My Tutor
+    </h1>
+    <div className="text-base italic opacity-80">
+      <span>"Empowering Education Through Technology"</span>
+    </div>
+  </div>
+
+  {/* Floating Elements */}
+  <div className="absolute inset-0 pointer-events-none">
+    <div className="absolute top-1/4 left-1/4 text-5xl opacity-70 animate-bounce"></div>
+    <div className="absolute top-1/3 right-1/4 text-5xl opacity-70 animate-pulse"></div>
+    <div className="absolute bottom-1/3 left-1/3 text-5xl opacity-70 animate-bounce delay-100"></div>
+    <div className="absolute bottom-1/4 right-1/3 text-5xl opacity-70 animate-pulse delay-200"></div>
+  </div>
+</div>
+
 
       {/* Navigation */}
       <nav className="sticky top-0 bg-white/95 backdrop-blur-md z-50 border-b border-gray-200 py-4">
@@ -137,7 +141,7 @@ const AboutUs = () => {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="text-lg">
               <p className="text-xl font-semibold text-gray-700 mb-6 leading-relaxed">
-                Found My Tutor (Kurukulam) is a revolutionary cloud-based platform that bridges 
+                Found My Tutor is a revolutionary cloud-based platform that bridges 
                 the gap between students seeking knowledge and experienced tutors ready to share 
                 their expertise.
               </p>
@@ -267,9 +271,7 @@ const AboutUs = () => {
           <div className="grid md:grid-cols-2 gap-16">
 <div className="text-lg">
   <p className="text-xl font-semibold text-gray-700 mb-8 leading-relaxed">
-    <strong>Built on AWS Cloud Infrastructure</strong> for unparalleled scalability, 
-    security, and performance. Our architecture ensures fast, reliable service delivery 
-    to users worldwide.
+    <strong>Built on AWS Cloud Infrastructure</strong>
   </p>
   <div className="space-y-6">
     <div className="flex gap-4 items-start">
@@ -309,7 +311,7 @@ const AboutUs = () => {
     </div>
 
     <div className="flex gap-4 items-start">
-      <span className="text-3xl flex-shrink-0">📊</span>
+      <span className="text-3xl flex-shrink-0"></span>
       <div className="text-gray-700">
         <strong>Amazon CloudWatch:</strong> Logs and monitoring for application performance
       </div>
@@ -383,7 +385,7 @@ const AboutUs = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 text-center">
         <div className="max-w-6xl mx-auto px-5">
-          <p className="mb-2">© 2025 Found My Tutor (Kurukulam). Made with  for learners everywhere.</p>
+          <p className="mb-2">© 2025 Found My Tutor. Made with  for learners everywhere.</p>
           <p className="opacity-70 italic">
             "Empowering minds, one connection at a time"
           </p>
