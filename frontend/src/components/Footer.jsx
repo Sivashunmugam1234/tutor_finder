@@ -1,4 +1,3 @@
-// File: src/components/Footer.jsx
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -8,6 +7,7 @@ const Footer = () => {
     <footer className="bg-gray-800 text-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
           <div>
             <h3 className="text-xl font-bold mb-4">TutorFinder</h3>
             <p className="text-gray-400">
@@ -15,60 +15,63 @@ const Footer = () => {
             </p>
           </div>
 
+          {/* Quick Links */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/teachers" className="text-gray-400 hover:text-white">
+                <Link to="/teachers" className="text-gray-400 hover:text-white transition-colors">
                   Browse Tutors
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-gray-400 hover:text-white">
+                <Link to="/register" className="text-gray-400 hover:text-white transition-colors">
                   Become a Tutor
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-400 hover:text-white">
+                <Link to="/aboutus" className="text-gray-400 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
             </ul>
           </div>
 
+          {/* Support */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Support</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/help" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   Help Center
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   Contact Us
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/faq" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   FAQ
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
 
+          {/* Legal */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/privacy" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   Privacy Policy
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   Terms of Service
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

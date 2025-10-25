@@ -1,23 +1,50 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
+        
         try {
             console.log('Login attempt:', { email, password });
-            await login(email, password);
-            navigate('/');
+            const userData = await login(email, password);
+            console.log('Login successful, user data:', userData);
+            
+            // Show success message
+            toast.success('Login successful!');
+            
+            // Redirect based on user role to their dashboard
+            if (userData?.role === 'teacher') {
+                console.log('Redirecting teacher to dashboard');
+                navigate('/teacher-dashboard');
+            } else if (userData?.role === 'student') {
+                console.log('Redirecting student to home');
+                navigate('/');
+            } else {
+                console.log('Unknown role, redirecting to home:', userData?.role);
+                navigate('/');
+            }
         } catch (error) {
             console.error('Login failed', error);
+            
+            // Handle different error messages
+            const errorMessage = error.response?.data?.message || 
+                                error.message || 
+                                'Invalid email or password. Please try again.';
+            
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -34,6 +61,13 @@ const Login = () => {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                <span className="block sm:inline">{error}</span>
+                            </div>
+                        )}
+
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email address
@@ -44,8 +78,12 @@ const Login = () => {
                                 type="email"
                                 required
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    setError(''); // Clear error on input change
+                                }}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="you@example.com"
                             />
                         </div>
 
@@ -59,8 +97,12 @@ const Login = () => {
                                 type="password"
                                 required
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setError(''); // Clear error on input change
+                                }}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter your password"
                             />
                         </div>
 

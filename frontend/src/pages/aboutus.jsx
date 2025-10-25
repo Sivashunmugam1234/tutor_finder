@@ -28,11 +28,6 @@ const AboutUs = () => {
       description: 'Find the perfect tutor based on subject, experience, ratings, and location preferences'
     },
     {
-      icon: '🤖',
-      title: 'AI-Powered Recommendations',
-      description: 'Get personalized tutor suggestions using machine learning algorithms'
-    },
-    {
       icon: '⭐',
       title: 'Rating & Review System',
       description: 'Transparent feedback system ensuring quality and credibility'
@@ -41,11 +36,6 @@ const AboutUs = () => {
       icon: '🌐',
       title: 'Online & Offline Modes',
       description: 'Choose between virtual sessions or in-person teaching based on your needs'
-    },
-    {
-      icon: '🔒',
-      title: 'Secure & Verified',
-      description: 'All tutors are verified with secure authentication and data protection'
     },
     {
       icon: '☁️',
@@ -63,24 +53,14 @@ const AboutUs = () => {
 
   const timeline = [
     {
-      year: '2024',
+      year: '2025',
       title: 'Project Inception',
       description: 'Vision to revolutionize tutor-student connections'
     },
     {
-      year: '2024',
+      year: '2025',
       title: 'Cloud Architecture',
       description: 'Built scalable platform using AWS services'
-    },
-    {
-      year: '2024',
-      title: 'AI Integration',
-      description: 'Implemented ML-based tutor recommendations'
-    },
-    {
-      year: '2025',
-      title: 'Global Expansion',
-      description: 'Connecting learners and educators worldwide'
     }
   ];
 
@@ -102,7 +82,7 @@ const AboutUs = () => {
         
         <div className="relative z-10 max-w-4xl px-5">
           <h1 className="text-6xl md:text-8xl font-extrabold mb-4 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-            About Kurukulam
+            About Gurukulam
           </h1>
           <p className="text-2xl md:text-4xl font-light mb-8 opacity-90">
             Found My Tutor - Connecting Learners with Expert Educators
@@ -221,7 +201,6 @@ const AboutUs = () => {
                   {member.initials}
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">{member.name}</h3>
-                <p className="text-gray-600 mb-4">{member.role}</p>
                 <div className="flex justify-center gap-2 flex-wrap">
                   <span className="bg-gradient-to-r from-purple-600 to-purple-900 text-white px-4 py-1 rounded-full text-xs font-semibold">Developer</span>
                 </div>
@@ -251,21 +230,21 @@ const AboutUs = () => {
             </div>
             <div className="flex flex-col gap-8">
               <div className="flex gap-6">
-                <div className="text-5xl flex-shrink-0">🎯</div>
+                <div className="text-5xl flex-shrink-0"></div>
                 <div>
                   <h4 className="text-xl font-bold text-gray-800 mb-2">Quality Education for All</h4>
                   <p className="text-gray-600 leading-relaxed">Making expert tutoring accessible regardless of location or background</p>
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="text-5xl flex-shrink-0">🤝</div>
+                <div className="text-5xl flex-shrink-0"></div>
                 <div>
                   <h4 className="text-xl font-bold text-gray-800 mb-2">Building Trust</h4>
                   <p className="text-gray-600 leading-relaxed">Transparent ratings and verified profiles ensure credibility and quality</p>
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="text-5xl flex-shrink-0">💡</div>
+                <div className="text-5xl flex-shrink-0"></div>
                 <div>
                   <h4 className="text-xl font-bold text-gray-800 mb-2">Innovation in Learning</h4>
                   <p className="text-gray-600 leading-relaxed">Leveraging AI and cloud technology for personalized education experiences</p>
@@ -286,45 +265,58 @@ const AboutUs = () => {
             Technology Stack
           </h2>
           <div className="grid md:grid-cols-2 gap-16">
-            <div className="text-lg">
-              <p className="text-xl font-semibold text-gray-700 mb-8 leading-relaxed">
-                <strong>Built on AWS Cloud Infrastructure</strong> for unparalleled scalability, 
-                security, and performance. Our architecture ensures fast, reliable service delivery 
-                to users worldwide.
-              </p>
-              <div className="space-y-6">
-                <div className="flex gap-4 items-start">
-                  <span className="text-3xl flex-shrink-0">☁️</span>
-                  <div className="text-gray-700">
-                    <strong>AWS EC2:</strong> Powers our backend APIs and authentication services
-                  </div>
-                </div>
-                <div className="flex gap-4 items-start">
-                  <span className="text-3xl flex-shrink-0">🗄️</span>
-                  <div className="text-gray-700">
-                    <strong>Amazon RDS & MongoDB Atlas:</strong> Reliable database management
-                  </div>
-                </div>
-                <div className="flex gap-4 items-start">
-                  <span className="text-3xl flex-shrink-0">🤖</span>
-                  <div className="text-gray-700">
-                    <strong>AWS SageMaker:</strong> AI-powered tutor recommendations
-                  </div>
-                </div>
-                <div className="flex gap-4 items-start">
-                  <span className="text-3xl flex-shrink-0">📦</span>
-                  <div className="text-gray-700">
-                    <strong>Amazon S3:</strong> Secure file storage for profiles and documents
-                  </div>
-                </div>
-                <div className="flex gap-4 items-start">
-                  <span className="text-3xl flex-shrink-0">🔔</span>
-                  <div className="text-gray-700">
-                    <strong>Amazon SNS:</strong> Real-time notifications and alerts
-                  </div>
-                </div>
-              </div>
-            </div>
+<div className="text-lg">
+  <p className="text-xl font-semibold text-gray-700 mb-8 leading-relaxed">
+    <strong>Built on AWS Cloud Infrastructure</strong> for unparalleled scalability, 
+    security, and performance. Our architecture ensures fast, reliable service delivery 
+    to users worldwide.
+  </p>
+  <div className="space-y-6">
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">☁️</span>
+      <div className="text-gray-700">
+        <strong>AWS EC2:</strong> Powers our backend APIs and authentication services
+      </div>
+    </div>
+
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">📦</span>
+      <div className="text-gray-700">
+        <strong>Amazon S3:</strong> Secure file storage for profiles and documents
+      </div>
+    </div>
+
+    {/* Newly added AWS services */}
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">📧</span>
+      <div className="text-gray-700">
+        <strong>Amazon SES:</strong> Full Access for secure and scalable email delivery
+      </div>
+    </div>
+
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">⚙️</span>
+      <div className="text-gray-700">
+        <strong>AWS Lambda:</strong> Full Access for serverless function execution
+      </div>
+    </div>
+
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">🚀</span>
+      <div className="text-gray-700">
+        <strong>Amazon API Gateway:</strong> Full Access for secure and scalable API management
+      </div>
+    </div>
+
+    <div className="flex gap-4 items-start">
+      <span className="text-3xl flex-shrink-0">📊</span>
+      <div className="text-gray-700">
+        <strong>Amazon CloudWatch:</strong> Logs and monitoring for application performance
+      </div>
+    </div>
+  </div>
+</div>
+
             <div className="bg-white p-8 rounded-3xl shadow-xl">
               <h3 className="text-2xl font-bold text-gray-800 mb-8 text-center">Project Timeline</h3>
               {timeline.map((item, index) => (

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const TeacherProfileEdit = () => {
   const { user, updateUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -17,7 +18,7 @@ const TeacherProfileEdit = () => {
     subjects: "",
     qualifications: "",
     experience: "",
-    hourlyRate: "",
+
     availability: "",
     bio: "",
     languages: "",
@@ -43,7 +44,7 @@ const TeacherProfileEdit = () => {
         qualifications:
           profile.teacherProfile?.qualifications?.join(", ") || "",
         experience: profile.teacherProfile?.experience || "",
-        hourlyRate: profile.teacherProfile?.hourlyRate || "",
+
         availability:
           profile.teacherProfile?.availability?.join("\n") || "",
         bio: profile.teacherProfile?.bio || "",
@@ -82,60 +83,75 @@ const TeacherProfileEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    console.log('Form submission started');
+    console.log('Form data:', formData);
 
     try {
       const formDataToSend = new FormData();
 
-      // Basic info
-      formDataToSend.append("name", formData.name);
-      if (formData.phone) formDataToSend.append("phone", formData.phone);
+      // Basic info (only if provided)
+      if (formData.name && formData.name.trim()) {
+        formDataToSend.append("name", formData.name);
+      }
+      formDataToSend.append("phone", formData.phone); // Allow empty phone
 
-      // Location
-      const location = {
-        city: formData.city,
-        state: formData.state,
-        country: formData.country,
-      };
-      formDataToSend.append("location", JSON.stringify(location));
+      // Location (only if any field is provided)
+      if (formData.city || formData.state || formData.country) {
+        const location = {
+          city: formData.city,
+          state: formData.state,
+          country: formData.country,
+        };
+        formDataToSend.append("location", JSON.stringify(location));
+      }
 
-      // Teacher profile fields
-      if (formData.subjects) {
+      // Teacher profile fields (only if provided)
+      if (formData.subjects && formData.subjects.trim()) {
         const subjectsArray = formData.subjects
           .split(",")
           .map((s) => s.trim())
           .filter((s) => s);
-        formDataToSend.append("subjects", JSON.stringify(subjectsArray));
+        if (subjectsArray.length > 0) {
+          formDataToSend.append("subjects", JSON.stringify(subjectsArray));
+        }
       }
 
-      if (formData.qualifications) {
+      if (formData.qualifications && formData.qualifications.trim()) {
         const qualsArray = formData.qualifications
           .split(",")
           .map((q) => q.trim())
           .filter((q) => q);
-        formDataToSend.append("qualifications", JSON.stringify(qualsArray));
+        if (qualsArray.length > 0) {
+          formDataToSend.append("qualifications", JSON.stringify(qualsArray));
+        }
       }
 
-      if (formData.experience)
+      if (formData.experience && formData.experience.trim())
         formDataToSend.append("experience", formData.experience);
-      if (formData.hourlyRate)
-        formDataToSend.append("hourlyRate", formData.hourlyRate);
 
-      if (formData.availability) {
+
+      if (formData.availability && formData.availability.trim()) {
         const availArray = formData.availability
           .split("\n")
           .map((a) => a.trim())
           .filter((a) => a);
-        formDataToSend.append("availability", JSON.stringify(availArray));
+        if (availArray.length > 0) {
+          formDataToSend.append("availability", JSON.stringify(availArray));
+        }
       }
 
-      if (formData.bio) formDataToSend.append("bio", formData.bio);
+      // Always send bio (can be empty)
+      formDataToSend.append("bio", formData.bio);
 
-      if (formData.languages) {
+      if (formData.languages && formData.languages.trim()) {
         const langsArray = formData.languages
           .split(",")
           .map((l) => l.trim())
           .filter((l) => l);
-        formDataToSend.append("languages", JSON.stringify(langsArray));
+        if (langsArray.length > 0) {
+          formDataToSend.append("languages", JSON.stringify(langsArray));
+        }
       }
 
       if (formData.teachingMode.length > 0) {
@@ -150,18 +166,44 @@ const TeacherProfileEdit = () => {
         formDataToSend.append("profilePicture", profilePicture);
       }
 
+      console.log('Sending request to /teachers/profile');
+      console.log('FormData contents:');
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(key, value);
+      }
+      
       const response = await API.put("/teachers/profile", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
+      console.log('Response received:', response.data);
 
-      updateUser(response.data.data);
+      // Update user context with new data
+      const updatedUser = { ...user, ...response.data.data };
+      updateUser(updatedUser);
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
       toast.success("Profile updated successfully!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      console.error('Profile update error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to update profile. Please try again.";
+      
+      toast.error(errorMessage);
+      setError(errorMessage);
+      
+      // Show detailed error for debugging
+      if (error.response?.status === 400) {
+        console.error('Validation errors:', error.response.data.errors);
+      }
     } finally {
       setLoading(false);
+      console.log('Form submission completed');
     }
   };
 
@@ -173,6 +215,14 @@ const TeacherProfileEdit = () => {
             Edit Teacher Profile
           </h1>
 
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+              <p className="font-medium">Error updating profile:</p>
+              <p>{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Picture */}
             <div>
@@ -181,7 +231,7 @@ const TeacherProfileEdit = () => {
               </label>
               <div className="flex items-center gap-4">
                 <img
-                  src={user?.profilePicture || "https://via.placeholder.com/100"}
+                  src={profilePicture ? URL.createObjectURL(profilePicture) : (user?.profilePicture || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png")}
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover"
                 />
@@ -310,19 +360,7 @@ const TeacherProfileEdit = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hourly Rate ($)
-                </label>
-                <input
-                  type="number"
-                  name="hourlyRate"
-                  value={formData.hourlyRate}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+
             </div>
 
             <div>

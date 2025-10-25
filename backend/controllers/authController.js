@@ -113,3 +113,33 @@ exports.updateProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
+// @desc    Update user profile picture
+// @route   PUT /api/auth/profile/picture
+// @access  Private
+exports.updateProfilePicture = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  if (!req.file) {
+    res.status(400);
+    throw new Error('No image file provided');
+  }
+
+  // Update profile picture URL
+  const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+  user.profilePicture = profilePictureUrl;
+  const updatedUser = await user.save();
+  
+  console.log('Updated profile picture URL:', profilePictureUrl);
+
+  res.json({
+    success: true,
+    data: updatedUser.getPublicProfile(),
+    message: 'Profile picture updated successfully'
+  });
+});

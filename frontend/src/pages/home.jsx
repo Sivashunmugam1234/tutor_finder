@@ -1,12 +1,20 @@
-// File: src/pages/Home.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import API from '../api/axios'; // Using your simpler API import
+import API from '../api/axios';
 import TeacherCard from '../components/TeacherCard';
+import AuthContext from '../context/AuthContext';
+import { BookOpen, Users, Star, Search, CheckCircle, DollarSign, ArrowRight, Play } from 'lucide-react';
 
 const Home = () => {
+  const { user } = useContext(AuthContext);
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats] = useState({
+    totalTutors: 500,
+    totalStudents: 2500,
+    totalLessons: 10000,
+    avgRating: 4.8
+  });
 
   useEffect(() => {
     fetchFeaturedTeachers();
@@ -14,8 +22,8 @@ const Home = () => {
 
   const fetchFeaturedTeachers = async () => {
     try {
-      const response = await API.get('/teachers?limit=4&sortBy=rating');
-      setTeachers(response.data.data || response.data); // support both API structures
+      const response = await API.get('/teachers?limit=6&sortBy=rating');
+      setTeachers(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching teachers:', error);
     } finally {
@@ -24,107 +32,153 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Find Your Perfect Tutor
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            Learn from experienced teachers anywhere, anytime.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              to="/teachers" 
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
-            >
-              Browse Tutors
-            </Link>
-            <Link 
-              to="/register" 
-              className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-yellow-300 transition-colors"
-            >
-              Become a Tutor
-            </Link>
+      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-purple-800 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
+          <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-2000"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
+               
+              <span className="block text-yellow-400">Find My Tutor</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              Connect with expert tutors worldwide. Learn at your pace, achieve your goals, and unlock your potential.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+              <Link 
+                to="/teachers" 
+                className="group bg-white text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+              >
+                <Search className="w-5 h-5 mr-2" />
+                Browse Tutors
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              {!user && (
+                <Link 
+                  to="/register" 
+                  className="group bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                >
+                  <Users className="w-5 h-5 mr-2" />
+                  Become a Tutor
+                </Link>
+              )}
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-400">{stats.totalTutors}+</div>
+                <div className="text-blue-200">Expert Tutors</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-400">{stats.totalStudents}+</div>
+                <div className="text-blue-200">Happy Students</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-400">{stats.totalLessons}+</div>
+                <div className="text-blue-200">Lessons Completed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-400">{stats.avgRating}★</div>
+                <div className="text-blue-200">Average Rating</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-            Why Choose TutorFinder?
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Why Choose <span className="text-blue-600">TutorFinder</span>?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Experience the future of personalized learning with our innovative platform
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="text-center p-6">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <Search className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Easy Search</h3>
-              <p className="text-gray-600">Find tutors by subject, location, and price range with our powerful search.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Smart Search</h3>
+              <p className="text-gray-600 text-center leading-relaxed">Advanced AI-powered search to find the perfect tutor based on your learning style, subject, and schedule preferences.</p>
             </div>
-            {/* Feature 2 */}
-            <div className="text-center p-6">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+
+            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+              <div className="bg-gradient-to-br from-green-500 to-green-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Verified Tutors</h3>
-              <p className="text-gray-600">All tutors are reviewed by students to ensure quality education.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Verified Excellence</h3>
+              <p className="text-gray-600 text-center leading-relaxed">Every tutor undergoes rigorous verification and continuous quality monitoring to ensure exceptional learning experiences.</p>
             </div>
-            {/* Feature 3 */}
-            <div className="text-center p-6">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+
+            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">Flexible Pricing</h3>
-              <p className="text-gray-600">Choose from tutors with various price points to fit your budget.</p>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Transparent Pricing</h3>
+              <p className="text-gray-600 text-center leading-relaxed">Clear, upfront pricing with flexible payment options. No hidden fees, just quality education at fair prices.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Teachers Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tutors</h2>
-            <p className="text-gray-600">Meet some of our top-rated tutors</p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Meet Our <span className="text-blue-600">Star Tutors</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Learn from the best educators who are passionate about your success
+            </p>
           </div>
 
           {loading ? (
-            <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="flex justify-center py-20">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                <div className="absolute top-0 left-0 animate-ping rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-300 opacity-20"></div>
+              </div>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {teachers.map((teacher) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {teachers.slice(0, 6).map((teacher) => (
                   <TeacherCard key={teacher._id} teacher={teacher} />
                 ))}
               </div>
 
               {teachers.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-600">No tutors available yet. Check back soon!</p>
+                <div className="text-center py-20">
+                  <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No tutors available yet</h3>
+                  <p className="text-gray-500">Check back soon for amazing tutors!</p>
                 </div>
               )}
 
               {teachers.length > 0 && (
-                <div className="text-center mt-12">
+                <div className="text-center mt-16">
                   <Link 
                     to="/teachers" 
-                    className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    className="group inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                   >
-                    View All Tutors
+                    <Users className="w-5 h-5 mr-2" />
+                    Explore All Tutors
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               )}
@@ -133,19 +187,61 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-blue-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
-          <p className="text-xl mb-8 text-blue-100">Join thousands of students finding the perfect tutor</p>
-          <Link 
-            to="/register" 
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
-          >
-            Get Started Now
-          </Link>
-        </div>
-      </section>
+      {/* CTA Section - Only show when not logged in */}
+      {!user && (
+        <section className="relative bg-gradient-to-r from-blue-900 via-purple-900 to-blue-900 text-white py-20 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 w-full h-full bg-black opacity-20"></div>
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
+          </div>
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Ready to <span className="text-yellow-400">Transform</span> Your Learning?
+              </h2>
+              <p className="text-xl md:text-2xl mb-10 text-blue-100 leading-relaxed">
+                Join thousands of students who have already discovered their perfect tutor and achieved their learning goals
+              </p>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <Link 
+                  to="/register" 
+                  className="group bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-10 py-4 rounded-full font-bold text-xl hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center justify-center"
+                >
+                  <Play className="w-6 h-6 mr-3" />
+                  Start Learning Today
+                  <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                
+                <Link 
+                  to="/teachers" 
+                  className="group bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-10 py-4 rounded-full font-bold text-xl hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center justify-center"
+                >
+                  <Search className="w-6 h-6 mr-3" />
+                  Browse Tutors
+                </Link>
+              </div>
+              
+              <div className="mt-12 flex justify-center items-center space-x-8 text-blue-200">
+                <div className="flex items-center">
+                  <Star className="w-5 h-5 text-yellow-400 mr-2" />
+                  <span>4.9/5 Rating</span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 text-yellow-400 mr-2" />
+                  <span>3+ Students</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-yellow-400 mr-2" />
+                  <span>Verified Tutors</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

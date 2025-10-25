@@ -14,27 +14,61 @@ const Register = () => {
     role: 'student'
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Clear error on input change
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError('Please enter your full name');
+      toast.error('Please enter your full name');
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Please enter your email address');
+      toast.error('Please enter your email address');
+      return false;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      toast.error('Password must be at least 6 characters');
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      toast.error('Passwords do not match');
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    // Validate form before submission
+    if (!validateForm()) {
       return;
     }
 
     setLoading(true);
+    setError('');
 
     try {
       const { confirmPassword, ...registerData } = formData;
@@ -42,21 +76,56 @@ const Register = () => {
       // ⚡ Use your API instance
       const response = await API.post('/auth/register', registerData);
 
-      // Assuming backend returns { token, name, email, role }
-      const { token, ...userData } = response.data;
+      // Handle different response structures
+      let userData;
+      let token;
 
-      // Save user to context and localStorage
-      login(userData, token);
-      toast.success('Registration successful!');
-
-      // Redirect based on role
-      if (userData.role === 'teacher') {
-        navigate('/teacher/profile');
+      if (response.data.data && response.data.data.user) {
+        userData = response.data.data.user;
+        token = response.data.data.token;
+      } else if (response.data.user) {
+        userData = response.data.user;
+        token = response.data.token;
       } else {
-        navigate('/teachers');
+        userData = response.data;
+        token = response.data.token;
+      }
+
+      // Save token if exists
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
+      // Save user data
+      localStorage.setItem('userInfo', JSON.stringify(userData));
+      
+      toast.success('Registration successful! Welcome aboard!');
+
+      // Redirect based on role to their dashboard
+      if (userData.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      } else {
+        navigate('/student/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', error);
+      
+      // Handle different error messages
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          'Registration failed. Please try again.';
+      
+      // Check for specific error types
+      if (errorMessage.toLowerCase().includes('email') && errorMessage.toLowerCase().includes('exist')) {
+        setError('This email is already registered. Please login instead.');
+        toast.error('This email is already registered. Please login instead.');
+      } else if (errorMessage.toLowerCase().includes('email')) {
+        setError('Please enter a valid email address');
+        toast.error('Please enter a valid email address');
+      } else {
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -73,6 +142,13 @@ const Register = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Full Name
@@ -85,6 +161,7 @@ const Register = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your full name"
               />
             </div>
 
@@ -100,6 +177,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="you@example.com"
               />
             </div>
 
@@ -131,6 +209,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Create a strong password"
               />
               <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
             </div>
@@ -147,6 +226,7 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Re-enter your password"
               />
             </div>
 

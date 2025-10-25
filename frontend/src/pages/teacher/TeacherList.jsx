@@ -15,18 +15,13 @@ const TeacherList = () => {
   });
 
   const [filters, setFilters] = useState({
-    search: '',
     subject: '',
-    minRate: '',
-    maxRate: '',
-    rating: '',
-    city: '',
-    sortBy: 'rating'
+    city: ''
   });
 
   useEffect(() => {
     fetchTeachers();
-  }, [pagination.page, filters.sortBy]);
+  }, [pagination.page]);
 
   const fetchTeachers = async () => {
     setLoading(true);
@@ -70,13 +65,8 @@ const TeacherList = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      search: '',
       subject: '',
-      minRate: '',
-      maxRate: '',
-      rating: '',
-      city: '',
-      sortBy: 'rating'
+      city: ''
     });
     setPagination({ ...pagination, page: 1 });
     fetchTeachers();
@@ -91,28 +81,13 @@ const TeacherList = () => {
           <p className="text-gray-600">Find the perfect tutor for your learning needs</p>
         </div>
 
-        {/* Search and Filters */}
+        {/* Search Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <form onSubmit={handleSearch}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              {/* Search */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Search
-                </label>
-                <input
-                  type="text"
-                  name="search"
-                  value={filters.search}
-                  onChange={handleFilterChange}
-                  placeholder="Subject or name..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {/* Subject */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Subject
                 </label>
                 <input
@@ -120,14 +95,14 @@ const TeacherList = () => {
                   name="subject"
                   value={filters.subject}
                   onChange={handleFilterChange}
-                  placeholder="e.g., Mathematics"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g., Mathematics, Physics, English"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
               {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   City
                 </label>
                 <input
@@ -135,98 +110,27 @@ const TeacherList = () => {
                   name="city"
                   value={filters.city}
                   onChange={handleFilterChange}
-                  placeholder="e.g., New York"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g., New York, London, Tokyo"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-              </div>
-
-              {/* Min Rate */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Min Rate ($/hr)
-                </label>
-                <input
-                  type="number"
-                  name="minRate"
-                  value={filters.minRate}
-                  onChange={handleFilterChange}
-                  placeholder="0"
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Max Rate */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Max Rate ($/hr)
-                </label>
-                <input
-                  type="number"
-                  name="maxRate"
-                  value={filters.maxRate}
-                  onChange={handleFilterChange}
-                  placeholder="1000"
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Min Rating */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Min Rating
-                </label>
-                <select
-                  name="rating"
-                  value={filters.rating}
-                  onChange={handleFilterChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Any</option>
-                  <option value="4">4+ Stars</option>
-                  <option value="3">3+ Stars</option>
-                  <option value="2">2+ Stars</option>
-                  <option value="1">1+ Stars</option>
-                </select>
               </div>
             </div>
 
-            {/* Sort and Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Sort by:</label>
-                <select
-                  name="sortBy"
-                  value={filters.sortBy}
-                  onChange={(e) => {
-                    handleFilterChange(e);
-                    setPagination({ ...pagination, page: 1 });
-                  }}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="rating">Highest Rated</option>
-                  <option value="price_low">Price: Low to High</option>
-                  <option value="price_high">Price: High to Low</option>
-                  <option value="reviews">Most Reviews</option>
-                </select>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleClearFilters}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium"
-                >
-                  Clear Filters
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-                >
-                  Search
-                </button>
-              </div>
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <button
+                type="submit"
+                className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              >
+                Search Tutors
+              </button>
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              >
+                Clear
+              </button>
             </div>
           </form>
         </div>

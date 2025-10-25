@@ -85,7 +85,7 @@ const TeacherDetails = () => {
     subjects = [],
     qualifications = [],
     experience = 0,
-    hourlyRate = 0,
+
     availability = [],
     bio = '',
     averageRating = 0,
@@ -103,7 +103,7 @@ const TeacherDetails = () => {
             {/* Left Panel */}
             <div className="md:w-1/3 p-8 bg-gradient-to-b from-blue-50 to-white">
               <img
-                src={profilePicture || 'https://via.placeholder.com/200'}
+                src={profilePicture || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}
                 alt={name}
                 className="w-48 h-48 rounded-full mx-auto object-cover border-4 border-white shadow-lg"
               />
@@ -118,10 +118,7 @@ const TeacherDetails = () => {
                     ({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})
                   </span>
                 </div>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-blue-600">${hourlyRate}</span>
-                  <span className="text-gray-600">/hour</span>
-                </div>
+
               </div>
             </div>
 
@@ -295,11 +292,22 @@ const TeacherDetails = () => {
               {reviews.map((review) => (
                 <div key={review._id} className="border-b border-gray-200 pb-6 last:border-0">
                   <div className="flex items-start gap-4">
-                    <img
-                      src={review.student?.profilePicture || 'https://via.placeholder.com/50'}
-                      alt={review.student?.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+                    <div className="relative w-12 h-12">
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
+                        alt={review.student?.name}
+                        className="w-12 h-12 rounded-full absolute inset-0 object-cover"
+                      />
+                      {review.student?.profilePicture && review.student.profilePicture !== "https://cdn-icons-png.flaticon.com/512/3135/3135768.png" && (
+                        <img
+                          src={review.student.profilePicture}
+                          alt={review.student?.name}
+                          className="w-12 h-12 rounded-full absolute inset-0 object-cover opacity-0 transition-opacity duration-300"
+                          onLoad={(e) => e.target.style.opacity = '1'}
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      )}
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <div>

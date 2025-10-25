@@ -1,19 +1,23 @@
 // File: src/pages/Profile.jsx
 import { useState, useEffect, useContext } from "react";
+import { Navigate } from "react-router-dom";
 import  AuthContext  from "../context/AuthContext";
-import API from "../api/axios"; // ✅ use the correct API
+import API from "../api/axios";
 import { toast } from "react-toastify";
 
 const Profile = () => {
   const { user, updateUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     password: "",
     confirmPassword: "",
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -33,8 +37,30 @@ const Profile = () => {
     });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is still authenticated
+    const userInfo = localStorage.getItem('userInfo');
+    if (!userInfo) {
+      toast.error('Please login again');
+      window.location.href = '/login';
+      return;
+    }
 
     if (formData.password && formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
@@ -47,27 +73,65 @@ const Profile = () => {
     }
 
     setLoading(true);
+    setError('');
     try {
-      const updateData = {
-        name: formData.name,
-        phone: formData.phone,
-      };
+      let response;
+      
+      if (selectedImage) {
+        // Use FormData for file upload
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', formData.name || '');
+        formDataToSend.append('phone', formData.phone || '');
+        
+        if (formData.password) {
+          formDataToSend.append('password', formData.password);
+        }
+        
+        formDataToSend.append('profilePicture', selectedImage);
 
-      if (formData.password) {
-        updateData.password = formData.password;
+        response = await API.put("/auth/profile", formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        // Use JSON for regular updates
+        const updateData = {
+          name: formData.name || '',
+          phone: formData.phone || '',
+        };
+
+        if (formData.password) {
+          updateData.password = formData.password;
+        }
+
+        response = await API.put("/auth/profile", updateData);
       }
-
-      // ✅ Use API instead of axiosClient
-      const response = await API.put("/auth/profile", updateData);
       
       // Update user in AuthContext
-      updateUser(response.data.data);
+      const updatedUser = response.data.data || response.data;
+      updateUser(updatedUser);
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
 
       toast.success("Profile updated successfully");
       setIsEditing(false);
+      setSelectedImage(null);
+      setImagePreview(null);
       setFormData({ ...formData, password: "", confirmPassword: "" });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      console.error('Profile update error:', error);
+      
+      // Handle token expiration
+      if (error.response?.status === 401) {
+        localStorage.removeItem('userInfo');
+        toast.error('Session expired. Please login again.');
+        window.location.href = '/login';
+        return;
+      }
+      
+      const errorMessage = error.response?.data?.message || error.message || "Failed to update profile";
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -81,17 +145,52 @@ const Profile = () => {
     );
   }
 
+  // Redirect teachers to their profile management page
+  if (user.role === 'teacher') {
+    return <Navigate to={`/teacher/${user._id}/manage`} replace />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-12 text-center">
-            <img
-              src={user.profilePicture || "https://via.placeholder.com/150"}
-              alt={user.name}
-              className="w-32 h-32 rounded-full mx-auto border-4 border-white shadow-lg object-cover"
-            />
+            <div className="relative inline-block">
+              <div className="relative w-32 h-32">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
+                  alt={user.name}
+                  className="w-32 h-32 rounded-full absolute inset-0 border-4 border-white shadow-lg object-cover"
+                />
+                {(imagePreview || (user.profilePicture && user.profilePicture !== "https://cdn-icons-png.flaticon.com/512/3135/3135768.png")) && (
+                  <img
+                    src={imagePreview || user.profilePicture}
+                    alt={user.name}
+                    className="w-32 h-32 rounded-full absolute inset-0 border-4 border-white shadow-lg object-cover opacity-0 transition-opacity duration-300"
+                    onLoad={(e) => e.target.style.opacity = '1'}
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                )}
+              </div>
+              {isEditing && (
+                <>
+                  <label className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer shadow-lg transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                </>
+              )}
+            </div>
             <h1 className="mt-4 text-3xl font-bold text-white">{user.name}</h1>
             <p className="mt-2 text-blue-100">{user.email}</p>
             <span
@@ -121,6 +220,14 @@ const Profile = () => {
               )}
             </div>
 
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <p className="font-medium">Error updating profile:</p>
+                <p>{error}</p>
+              </div>
+            )}
+
             {isEditing ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
@@ -133,7 +240,6 @@ const Profile = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -227,6 +333,9 @@ const Profile = () => {
                         password: "",
                         confirmPassword: "",
                       });
+                      setSelectedImage(null);
+                      setImagePreview(null);
+                      setError('');
                     }}
                     className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium"
                   >
