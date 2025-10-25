@@ -17,7 +17,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: config.CLIENT_URL || 'http://localhost:3000',
+  origin: config.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -73,7 +73,7 @@ app.listen(PORT, () => {
   console.log(`📝 Environment: ${config.NODE_ENV || 'development'}`);
   console.log(`🗄️  Database: ${config.MONGO_URI ? 'Connected' : 'Not configured'}`);
   console.log(`☁️  AWS S3: ${config.AWS_S3_BUCKET_NAME ? 'Configured' : 'Not configured (using local storage)'}`);
-  console.log(`🌐 CORS: ${config.CLIENT_URL || 'http://localhost:8080'}`);
+  console.log(`🌐 CORS: ${config.CLIENT_URL || 'http://localhost:5173'}`);
   console.log('='.repeat(50));
 });
 
