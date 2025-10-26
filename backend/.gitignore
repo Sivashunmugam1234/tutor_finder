@@ -4,3 +4,7 @@ uploads
 
 # Environment variables
 .env
+
+# Debug files (verbose logging for development only)
+*.debug.js
+DEBUG_README.md

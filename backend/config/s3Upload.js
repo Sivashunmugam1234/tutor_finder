@@ -11,7 +11,6 @@ const isS3Configured = config.AWS_ACCESS_KEY_ID &&
 let upload;
 
 if (isS3Configured) {
-  console.log("the s3 is configured");
   
   // Configure AWS S3
   // aws.config.update({
@@ -53,7 +52,6 @@ if (isS3Configured) {
     }
   });
 } else {
-  console.log("the s3 is not configured");
 
   // Use local storage if S3 is not configured
   const storage = multer.diskStorage({
@@ -77,8 +75,6 @@ if (isS3Configured) {
       }
     }
   });
-
-  console.warn('⚠️  AWS S3 not configured. Using local file storage.');
 }
 
 module.exports = upload;
