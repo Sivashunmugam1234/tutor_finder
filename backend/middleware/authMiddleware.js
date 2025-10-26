@@ -35,6 +35,22 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      res.status(401);
+      throw new Error('Not authorized');
+    }
+
+    if (!roles.includes(req.user.role)) {
+      res.status(403);
+      throw new Error(`Access denied. ${roles.join(' or ')} role required`);
+    }
+
+    next();
+  };
+};
+
 const isTeacher = (req, res, next) => {
   if (req.user && req.user.role === 'teacher') {
     next();
@@ -53,4 +69,4 @@ const isStudent = (req, res, next) => {
   }
 };
 
-module.exports = { protect, isTeacher, isStudent };
+module.exports = { protect, authorize, isTeacher, isStudent };
