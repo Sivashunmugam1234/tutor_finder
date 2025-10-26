@@ -9,6 +9,7 @@ const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const studentRoutes = require('./routes/studentRoutes');
+const requestRoutes = require('./routes/requestRoutes');
 
 // Connect to database
 connectDB();
@@ -50,6 +51,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/requests', requestRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -68,18 +70,10 @@ app.use(errorHandler);
 const PORT = config.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log('='.repeat(50));
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${config.NODE_ENV || 'development'}`);
-  console.log(`🗄️  Database: ${config.MONGO_URI ? 'Connected' : 'Not configured'}`);
-  console.log(`☁️  AWS S3: ${config.AWS_S3_BUCKET_NAME ? 'Configured' : 'Not configured (using local storage)'}`);
-  console.log(`🌐 CORS: ${config.CLIENT_URL || 'http://localhost:5173'}`);
-  console.log('='.repeat(50));
+  console.log(`Server running on port ${PORT}`);
 });
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.log('❌ UNHANDLED REJECTION! Shutting down...');
-  console.log(err.name, err.message);
+  console.error('Unhandled rejection:', err);
   process.exit(1);
 });

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AuthContext from '../../context/AuthContext';
 import API from '../../api/axios';
-import { User, BookOpen, Star, Calendar, DollarSign, Users, TrendingUp, Award, Eye, GraduationCap, Clock, Monitor, Globe, FileText } from 'lucide-react';
+import { User, BookOpen, Star, Calendar, DollarSign, Users, TrendingUp, Award, Eye, GraduationCap, Clock, Monitor, Globe, FileText, MessageSquare, UserCheck } from 'lucide-react';
 import { fixS3ImageUrl } from '../../utils/imageUtils';
 
 const TeacherDashboard = () => {
@@ -13,6 +13,7 @@ const TeacherDashboard = () => {
     averageRating: 0,
     totalEarnings: 0
   });
+  const [teacherData, setTeacherData] = useState(null);
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ const TeacherDashboard = () => {
         try {
           const response = await API.get(`/teachers/${user._id}`);
           const freshData = response.data.data;
+          setTeacherData(freshData);
           
           setStats({
             totalStudents: freshData.teacherProfile?.totalStudents || 0,
@@ -31,6 +33,7 @@ const TeacherDashboard = () => {
           });
         } catch (error) {
           console.error('Error fetching teacher data:', error);
+          setTeacherData(user);
           setStats({
             totalStudents: user.teacherProfile?.totalStudents || 0,
             totalReviews: user.teacherProfile?.totalReviews || 0,
@@ -178,6 +181,32 @@ const TeacherDashboard = () => {
                     <p className="text-orange-600 text-sm">See how students see you</p>
                   </div>
                 </Link>
+                
+                <Link
+                  to="/teacher-requests"
+                  className="group flex items-center p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 transform hover:scale-105"
+                >
+                  <div className="p-3 bg-indigo-500 rounded-lg group-hover:bg-indigo-600 transition-colors">
+                    <MessageSquare className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <span className="text-indigo-700 font-semibold text-lg">Student Requests</span>
+                    <p className="text-indigo-600 text-sm">Manage student requests</p>
+                  </div>
+                </Link>
+                
+                <Link
+                  to="/my-students"
+                  className="group flex items-center p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-xl hover:from-teal-100 hover:to-teal-200 transition-all duration-300 transform hover:scale-105"
+                >
+                  <div className="p-3 bg-teal-500 rounded-lg group-hover:bg-teal-600 transition-colors">
+                    <UserCheck className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <span className="text-teal-700 font-semibold text-lg">My Students</span>
+                    <p className="text-teal-600 text-sm">View accepted students</p>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -196,8 +225,8 @@ const TeacherDashboard = () => {
                     <p className="text-sm font-medium text-blue-700">Subjects</p>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {user?.teacherProfile?.subjects?.length > 0 ? (
-                      user.teacherProfile.subjects.map((subject, index) => (
+                    {teacherData?.teacherProfile?.subjects?.length > 0 ? (
+                      teacherData.teacherProfile.subjects.map((subject, index) => (
                         <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                           {subject}
                         </span>
@@ -214,8 +243,8 @@ const TeacherDashboard = () => {
                     <p className="text-sm font-medium text-purple-700">Qualifications</p>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {user?.teacherProfile?.qualifications?.length > 0 ? (
-                      user.teacherProfile.qualifications.map((qualification, index) => (
+                    {teacherData?.teacherProfile?.qualifications?.length > 0 ? (
+                      teacherData.teacherProfile.qualifications.map((qualification, index) => (
                         <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
                           {qualification}
                         </span>
@@ -231,7 +260,7 @@ const TeacherDashboard = () => {
                     <Clock className="h-4 w-4 text-green-600 mr-2" />
                     <p className="text-sm font-medium text-green-700">Experience</p>
                   </div>
-                  <p className="font-semibold text-lg text-gray-900">{user?.teacherProfile?.experience || 0} years</p>
+                  <p className="font-semibold text-lg text-gray-900">{teacherData?.teacherProfile?.experience || 0} years</p>
                 </div>
                 
                 <div className="p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200">
@@ -240,8 +269,8 @@ const TeacherDashboard = () => {
                     <p className="text-sm font-medium text-teal-700">Teaching Mode</p>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {user?.teacherProfile?.teachingMode?.length > 0 ? (
-                      user.teacherProfile.teachingMode.map((mode, index) => (
+                    {teacherData?.teacherProfile?.teachingMode?.length > 0 ? (
+                      teacherData.teacherProfile.teachingMode.map((mode, index) => (
                         <span key={index} className="px-2 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-medium capitalize">
                           {mode}
                         </span>
@@ -258,8 +287,8 @@ const TeacherDashboard = () => {
                     <p className="text-sm font-medium text-orange-700">Languages</p>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {user?.teacherProfile?.languages?.length > 0 ? (
-                      user.teacherProfile.languages.map((language, index) => (
+                    {teacherData?.teacherProfile?.languages?.length > 0 ? (
+                      teacherData.teacherProfile.languages.map((language, index) => (
                         <span key={index} className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
                           {language}
                         </span>
@@ -275,7 +304,7 @@ const TeacherDashboard = () => {
                     <FileText className="h-4 w-4 text-gray-600 mr-2" />
                     <p className="text-sm font-medium text-gray-700">Bio</p>
                   </div>
-                  <p className="text-sm text-gray-700 line-clamp-3">{user?.teacherProfile?.bio || 'No bio provided'}</p>
+                  <p className="text-sm text-gray-700 line-clamp-3">{teacherData?.teacherProfile?.bio || 'No bio provided'}</p>
                 </div>
               </div>
             </div>

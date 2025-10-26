@@ -1,5 +1,8 @@
 const User = require('../models/User');
 const { asyncHandler, generateToken } = require('../utils/helpers');
+const { sendWelcomeEmail } = require('../utils/emailService');
+const emailService = require('../services/emailService');
+const crypto = require('crypto');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -16,6 +19,11 @@ exports.registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({ name, email, password, role });
 
   if (user) {
+    // Send welcome email (don't wait for it)
+    sendWelcomeEmail(email, name, role).catch(err => 
+      console.error('Failed to send welcome email:', err)
+    );
+
     res.status(201).json({
       success: true,
       data: {
@@ -95,7 +103,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
     user.name = req.body.name || user.name;
     
     // Handle phone number properly - allow empty string to clear the field
-    if (req.body.hasOwnProperty('phone')) {
+    if ('phone' in req.body) {
       user.phone = req.body.phone;
     }
     
@@ -126,32 +134,93 @@ exports.updateProfile = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update user profile picture
+// @desc    Update profile picture
 // @route   PUT /api/auth/profile/picture
 // @access  Private
 exports.updateProfilePicture = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
-  if (!user) {
+  if (user) {
+    if (req.file) {
+      const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+      user.profilePicture = profilePictureUrl;
+      
+      const updatedUser = await user.save();
+      
+      res.json({
+        success: true,
+        data: updatedUser.getPublicProfile(),
+        message: 'Profile picture updated successfully'
+      });
+    } else {
+      res.status(400);
+      throw new Error('No image file provided');
+    }
+  } else {
     res.status(404);
     throw new Error('User not found');
   }
+});
 
-  if (!req.file) {
-    res.status(400);
-    throw new Error('No image file provided');
-  }
-
-  // Update profile picture URL
-  const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
-  user.profilePicture = profilePictureUrl;
-  const updatedUser = await user.save();
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
   
-  console.log('Updated profile picture URL:', profilePictureUrl);
-
+  const user = await User.findOne({ email });
+  
+  if (!user) {
+    return res.json({
+      success: true,
+      message: 'If an account exists with that email, a password reset link has been sent'
+    });
+  }
+  
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  
+  user.resetPasswordToken = hashedToken;
+  user.resetPasswordExpire = Date.now() + 3600000;
+  await user.save({ validateBeforeSave: false });
+  
+  await emailService.sendPasswordResetEmail(email, user.name, resetToken);
+  
   res.json({
     success: true,
-    data: updatedUser.getPublicProfile(),
-    message: 'Profile picture updated successfully'
+    message: 'If an account exists with that email, a password reset link has been sent'
+  });
+});
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password/:token
+// @access  Public
+exports.resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  });
+  
+  if (!user) {
+    res.status(400);
+    throw new Error('Invalid or expired reset token');
+  }
+  
+  user.password = password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+  
+  res.json({
+    success: true,
+    message: 'Password reset successful',
+    data: {
+      token: generateToken(user._id)
+    }
   });
 });

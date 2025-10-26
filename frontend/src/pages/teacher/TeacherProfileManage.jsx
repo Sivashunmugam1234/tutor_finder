@@ -42,6 +42,9 @@ const TeacherProfileManage = () => {
     try {
       const response = await API.get('/auth/profile');
       const profile = response.data.data;
+      
+      // Update the user context with fresh data
+      updateUser(profile);
 
       setFormData({
         name: profile.name || '',
@@ -52,7 +55,6 @@ const TeacherProfileManage = () => {
         subjects: profile.teacherProfile?.subjects?.join(', ') || '',
         qualifications: profile.teacherProfile?.qualifications?.join(', ') || '',
         experience: profile.teacherProfile?.experience || '',
-
         availability: profile.teacherProfile?.availability?.join('\n') || '',
         bio: profile.teacherProfile?.bio || '',
         languages: profile.teacherProfile?.languages?.join(', ') || '',

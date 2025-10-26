@@ -5,6 +5,7 @@ import { Star, MapPin, Clock, DollarSign, BookOpen, Users } from 'lucide-react';
 import { fixS3ImageUrl } from '../../utils/imageUtils';
 import AuthContext from '../../context/AuthContext';
 import { toast } from 'react-toastify';
+import SendRequestModal from '../../components/SendRequestModal';
 
 const TeacherProfileView = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const TeacherProfileView = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewData, setReviewData] = useState({ rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   useEffect(() => {
     fetchTeacher();
@@ -35,7 +37,9 @@ const TeacherProfileView = () => {
   const fetchTeacher = async () => {
     try {
       const response = await API.get(`/teachers/${id}`);
-      setTeacher(response.data.data || response.data);
+      const teacherData = response.data.data || response.data;
+      console.log('Fetched teacher data:', teacherData);
+      setTeacher(teacherData);
     } catch (error) {
       console.error('Error fetching teacher:', error);
     } finally {
@@ -136,9 +140,14 @@ const TeacherProfileView = () => {
                 
                 {/* Contact & Review Buttons */}
                 <div className="space-y-3">
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                    Contact Teacher
-                  </button>
+                  {user?.role === 'student' && (
+                    <button 
+                      onClick={() => setShowRequestModal(true)}
+                      className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    >
+                      Send Request
+                    </button>
+                  )}
                   {user?.role === 'student' && !teacher.reviews?.some(review => review.student?._id === user._id) && (
                     <button 
                       onClick={() => setShowReviewForm(true)}
@@ -181,7 +190,10 @@ const TeacherProfileView = () => {
                   <div>
                     <p className="text-sm text-gray-600">Location</p>
                     <p className="font-semibold">
-                      {teacher.location?.city || 'Not specified'}
+                      {teacher.location?.city ? 
+                        `${teacher.location.city}${teacher.location.state ? `, ${teacher.location.state}` : ''}` : 
+                        'Not specified'
+                      }
                     </p>
                   </div>
                 </div>
@@ -318,6 +330,13 @@ const TeacherProfileView = () => {
             </div>
           </div>
         </div>
+
+        {/* Send Request Modal */}
+        <SendRequestModal 
+          isOpen={showRequestModal}
+          onClose={() => setShowRequestModal(false)}
+          teacher={teacher}
+        />
 
         {/* Review Form Modal */}
         {showReviewForm && (

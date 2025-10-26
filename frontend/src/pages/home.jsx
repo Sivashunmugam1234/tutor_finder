@@ -50,22 +50,33 @@ const Home = () => {
             </h1>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-              <Link 
-                to="/teachers" 
-                className="group bg-white text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
-              >
-                <Search className="w-5 h-5 mr-2" />
-                Browse Tutors
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              {!user && (
+              {user ? (
                 <Link 
-                  to="/register" 
-                  className="group bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                  to={user.role === 'teacher' ? '/teacher-dashboard' : '/student-dashboard'} 
+                  className="group bg-white text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  Become a Tutor
+                  Go to Dashboard
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
+              ) : (
+                <>
+                  <Link 
+                    to="/teachers" 
+                    className="group bg-white text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                  >
+                    <Search className="w-5 h-5 mr-2" />
+                    Browse Tutors
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    className="group bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:from-yellow-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                  >
+                    <Users className="w-5 h-5 mr-2" />
+                    Become a Tutor
+                  </Link>
+                </>
               )}
             </div>
           </div>

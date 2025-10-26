@@ -14,7 +14,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
-    navigate("/login");
+    navigate("/");
   };
 
   const isLoggedIn = isAuthenticated || !!user;
@@ -71,11 +71,45 @@ const Navbar = () => {
 
                 {user?.role === "student" && (
                   <Link
-                    to="/my-reviews"
+                    to="/student-dashboard"
                     className="text-gray-700 hover:text-blue-600 font-medium"
                   >
-                    My Reviews
+                    Dashboard
                   </Link>
+                )}
+
+                {user?.role === "student" && (
+                  <>
+                    <Link
+                      to="/my-reviews"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      My Reviews
+                    </Link>
+                    <Link
+                      to="/my-requests"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      My Requests
+                    </Link>
+                  </>
+                )}
+
+                {user?.role === "teacher" && (
+                  <>
+                    <Link
+                      to="/teacher-requests"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      Requests
+                    </Link>
+                    <Link
+                      to="/my-students"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      My Students
+                    </Link>
+                  </>
                 )}
 
                 {/* Profile Icon */}
@@ -182,12 +216,50 @@ const Navbar = () => {
 
                 {user?.role === "student" && (
                   <Link
-                    to="/my-reviews"
+                    to="/student-dashboard"
                     className="block text-gray-700 hover:text-blue-600"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    My Reviews
+                    Dashboard
                   </Link>
+                )}
+
+                {user?.role === "student" && (
+                  <>
+                    <Link
+                      to="/my-reviews"
+                      className="block text-gray-700 hover:text-blue-600"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Reviews
+                    </Link>
+                    <Link
+                      to="/my-requests"
+                      className="block text-gray-700 hover:text-blue-600"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Requests
+                    </Link>
+                  </>
+                )}
+
+                {user?.role === "teacher" && (
+                  <>
+                    <Link
+                      to="/teacher-requests"
+                      className="block text-gray-700 hover:text-blue-600"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Requests
+                    </Link>
+                    <Link
+                      to="/my-students"
+                      className="block text-gray-700 hover:text-blue-600"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Students
+                    </Link>
+                  </>
                 )}
 
                 {/* Profile in mobile menu */}

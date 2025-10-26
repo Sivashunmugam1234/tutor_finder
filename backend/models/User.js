@@ -52,6 +52,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  resetPasswordToken: {
+    type: String
+  },
+  resetPasswordExpire: {
+    type: Date
+  },
   teacherProfile: {
     subjects: {
       type: [String],
