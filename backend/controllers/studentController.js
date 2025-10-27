@@ -6,14 +6,34 @@ const { asyncHandler } = require('../utils/helpers');
 // @route   POST /api/students/teachers/:id/reviews
 // @access  Private (Student only)
 exports.createTeacherReview = asyncHandler(async (req, res) => {
+
+  
   const { rating, comment } = req.body;
   const teacherId = req.params.id;
 
   // Check if teacher exists
   const teacher = await User.findById(teacherId);
   if (!teacher || teacher.role !== 'teacher') {
+
     res.status(404);
     throw new Error('Teacher not found');
+  }
+
+  // Ensure teacher has teacherProfile
+  if (!teacher.teacherProfile) {
+    teacher.teacherProfile = {
+      subjects: [],
+      qualifications: [],
+      experience: 0,
+      hourlyRate: 0,
+      availability: [],
+      bio: '',
+      averageRating: 0,
+      totalReviews: 0,
+      totalStudents: 0,
+      languages: [],
+      teachingMode: ['both']
+    };
   }
 
   // Check if review already exists
@@ -23,6 +43,7 @@ exports.createTeacherReview = asyncHandler(async (req, res) => {
   });
 
   if (existingReview) {
+
     res.status(400);
     throw new Error('You have already reviewed this teacher');
   }
@@ -34,6 +55,8 @@ exports.createTeacherReview = asyncHandler(async (req, res) => {
     rating,
     comment
   });
+  
+
 
   // Update teacher's average rating
   const reviews = await Review.find({ teacher: teacherId, isActive: true });
@@ -42,6 +65,8 @@ exports.createTeacherReview = asyncHandler(async (req, res) => {
   teacher.teacherProfile.averageRating = avgRating;
   teacher.teacherProfile.totalReviews = reviews.length;
   await teacher.save();
+  
+
 
   const populatedReview = await Review.findById(review._id)
     .populate('student', 'name profilePicture')

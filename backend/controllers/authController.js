@@ -20,9 +20,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     // Send welcome email (don't wait for it)
-    sendWelcomeEmail(email, name, role).catch(err => 
-      console.error('Failed to send welcome email:', err)
-    );
+    sendWelcomeEmail(email, name, role).catch(err => {});
 
     res.status(201).json({
       success: true,
@@ -31,6 +29,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -63,6 +62,7 @@ exports.loginUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -99,7 +99,11 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
   if (user) {
     user.name = req.body.name || user.name;
-    user.phone = req.body.phone || user.phone;
+    
+    // Handle phone number properly - allow empty string to clear the field
+    if ('phone' in req.body) {
+      user.phone = req.body.phone;
+    }
     
     if (req.body.location) {
       user.location = { ...user.location, ...req.body.location };
@@ -109,6 +113,12 @@ exports.updateProfile = asyncHandler(async (req, res) => {
       user.password = req.body.password;
     }
 
+    // Handle profile picture upload if file is provided
+    if (req.file) {
+      const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+      user.profilePicture = profilePictureUrl;
+    }
+
     const updatedUser = await user.save();
 
     res.json({
@@ -116,6 +126,34 @@ exports.updateProfile = asyncHandler(async (req, res) => {
       data: updatedUser.getPublicProfile(),
       message: 'Profile updated successfully'
     });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Update profile picture
+// @route   PUT /api/auth/profile/picture
+// @access  Private
+exports.updateProfilePicture = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    if (req.file) {
+      const profilePictureUrl = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+      user.profilePicture = profilePictureUrl;
+      
+      const updatedUser = await user.save();
+      
+      res.json({
+        success: true,
+        data: updatedUser.getPublicProfile(),
+        message: 'Profile picture updated successfully'
+      });
+    } else {
+      res.status(400);
+      throw new Error('No image file provided');
+    }
   } else {
     res.status(404);
     throw new Error('User not found');

@@ -6,7 +6,7 @@ const { asyncHandler, getPagination } = require('../utils/helpers');
 // @route   GET /api/teachers
 // @access  Public
 exports.getAllTeachers = asyncHandler(async (req, res) => {
-  const { subject, minRate, maxRate, rating, city, search, page, limit, sortBy } = req.query;
+  const { subject, rating, city, search, page, limit, sortBy } = req.query;
   
   const query = { role: 'teacher', isActive: true };
 
@@ -21,12 +21,7 @@ exports.getAllTeachers = asyncHandler(async (req, res) => {
   if (subject) {
     query['teacherProfile.subjects'] = { $regex: subject, $options: 'i' };
   }
-  
-  if (minRate || maxRate) {
-    query['teacherProfile.hourlyRate'] = {};
-    if (minRate) query['teacherProfile.hourlyRate'].$gte = Number(minRate);
-    if (maxRate) query['teacherProfile.hourlyRate'].$lte = Number(maxRate);
-  }
+
   
   if (rating) {
     query['teacherProfile.averageRating'] = { $gte: Number(rating) };
@@ -44,12 +39,7 @@ exports.getAllTeachers = asyncHandler(async (req, res) => {
     case 'rating':
       sort = { 'teacherProfile.averageRating': -1 };
       break;
-    case 'price_low':
-      sort = { 'teacherProfile.hourlyRate': 1 };
-      break;
-    case 'price_high':
-      sort = { 'teacherProfile.hourlyRate': -1 };
-      break;
+
     case 'reviews':
       sort = { 'teacherProfile.totalReviews': -1 };
       break;
@@ -107,57 +97,105 @@ exports.getTeacherById = asyncHandler(async (req, res) => {
 // @route   PUT /api/teachers/profile
 // @access  Private (Teacher only)
 exports.updateTeacherProfile = asyncHandler(async (req, res) => {
+
+  
   const teacher = await User.findById(req.user._id);
 
   if (!teacher) {
+
     res.status(404);
     throw new Error('Teacher not found');
   }
+  
 
-  // Update basic info
-  teacher.name = req.body.name || teacher.name;
-  teacher.phone = req.body.phone || teacher.phone;
+  
+  // Ensure teacherProfile exists
+  if (!teacher.teacherProfile) {
+    teacher.teacherProfile = {
+      subjects: [],
+      qualifications: [],
+      experience: 0,
+
+      availability: [],
+      bio: '',
+      averageRating: 0,
+      totalReviews: 0,
+      totalStudents: 0,
+      languages: [],
+      teachingMode: ['both']
+    };
+
+  }
+
+  // Update basic info (only if provided)
+  if (req.body.name && req.body.name.trim()) {
+    teacher.name = req.body.name;
+  }
+  if (req.body.phone !== undefined) {
+    teacher.phone = req.body.phone; // Allow empty phone
+  }
   
   if (req.body.location) {
-    teacher.location = { ...teacher.location, ...req.body.location };
+    const location = typeof req.body.location === 'string'
+      ? JSON.parse(req.body.location)
+      : req.body.location;
+    teacher.location = { ...teacher.location, ...location };
   }
 
   if (req.body.password) {
     teacher.password = req.body.password;
   }
   
-  // Update teacher-specific fields
-  if (req.body.subjects) {
-    teacher.teacherProfile.subjects = req.body.subjects;
+  // Update teacher-specific fields (only if provided)
+  if (req.body.subjects && req.body.subjects.trim()) {
+    try {
+      const parsedSubjects = typeof req.body.subjects === 'string' 
+        ? JSON.parse(req.body.subjects) 
+        : req.body.subjects;
+      teacher.teacherProfile.subjects = parsedSubjects;
+    } catch (error) {
+
+      throw new Error('Invalid subjects format');
+    }
   }
-  if (req.body.qualifications) {
-    teacher.teacherProfile.qualifications = req.body.qualifications;
+  if (req.body.qualifications && req.body.qualifications.trim()) {
+    teacher.teacherProfile.qualifications = typeof req.body.qualifications === 'string'
+      ? JSON.parse(req.body.qualifications)
+      : req.body.qualifications;
   }
-  if (req.body.experience !== undefined) {
-    teacher.teacherProfile.experience = req.body.experience;
+  if (req.body.experience !== undefined && req.body.experience !== '') {
+    teacher.teacherProfile.experience = Number(req.body.experience);
   }
-  if (req.body.hourlyRate !== undefined) {
-    teacher.teacherProfile.hourlyRate = req.body.hourlyRate;
+
+  if (req.body.availability && req.body.availability.trim()) {
+    teacher.teacherProfile.availability = typeof req.body.availability === 'string'
+      ? JSON.parse(req.body.availability)
+      : req.body.availability;
   }
-  if (req.body.availability) {
-    teacher.teacherProfile.availability = req.body.availability;
+  if (req.body.bio !== undefined) {
+    teacher.teacherProfile.bio = req.body.bio; // Allow empty bio
   }
-  if (req.body.bio) {
-    teacher.teacherProfile.bio = req.body.bio;
-  }
-  if (req.body.languages) {
-    teacher.teacherProfile.languages = req.body.languages;
+  if (req.body.languages && req.body.languages.trim()) {
+    teacher.teacherProfile.languages = typeof req.body.languages === 'string'
+      ? JSON.parse(req.body.languages)
+      : req.body.languages;
   }
   if (req.body.teachingMode) {
-    teacher.teacherProfile.teachingMode = req.body.teachingMode;
+    teacher.teacherProfile.teachingMode = typeof req.body.teachingMode === 'string'
+      ? JSON.parse(req.body.teachingMode)
+      : req.body.teachingMode;
   }
   
   // Handle S3 image upload
   if (req.file) {
-    teacher.profilePicture = req.file.location;
+    // Use the S3 URL or local file path
+    teacher.profilePicture = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
+
   }
 
   const updatedTeacher = await teacher.save();
+  
+
   
   res.json({
     success: true,
