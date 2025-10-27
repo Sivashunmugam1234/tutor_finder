@@ -12,10 +12,10 @@ export const AuthProvider = ({ children }) => {
     if (userInfo) {
       try {
         const parsedUser = JSON.parse(userInfo);
-        console.log('Loading user from localStorage:', parsedUser);
+
         setUser(parsedUser);
       } catch (error) {
-        console.error('Error parsing user info from localStorage:', error);
+
         localStorage.removeItem('userInfo');
       }
     }
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (userData) => {
-    console.log('Updating user in context:', userData);
+
     const updatedUser = { ...user, ...userData };
     setUser(updatedUser);
     localStorage.setItem('userInfo', JSON.stringify(updatedUser));

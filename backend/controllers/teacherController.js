@@ -97,20 +97,17 @@ exports.getTeacherById = asyncHandler(async (req, res) => {
 // @route   PUT /api/teachers/profile
 // @access  Private (Teacher only)
 exports.updateTeacherProfile = asyncHandler(async (req, res) => {
-  console.log('Teacher profile update request received');
-  console.log('User ID:', req.user._id);
-  console.log('Request body:', req.body);
-  console.log('Request file:', req.file);
+
   
   const teacher = await User.findById(req.user._id);
 
   if (!teacher) {
-    console.error('Teacher not found for ID:', req.user._id);
+
     res.status(404);
     throw new Error('Teacher not found');
   }
   
-  console.log('Current teacher data:', teacher.toObject());
+
   
   // Ensure teacherProfile exists
   if (!teacher.teacherProfile) {
@@ -127,7 +124,7 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
       languages: [],
       teachingMode: ['both']
     };
-    console.log('Created new teacherProfile object');
+
   }
 
   // Update basic info (only if provided)
@@ -150,21 +147,16 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
   }
   
   // Update teacher-specific fields (only if provided)
-  console.log('Processing subjects from request:', req.body.subjects);
   if (req.body.subjects && req.body.subjects.trim()) {
     try {
       const parsedSubjects = typeof req.body.subjects === 'string' 
         ? JSON.parse(req.body.subjects) 
         : req.body.subjects;
-      console.log('Parsed subjects:', parsedSubjects);
       teacher.teacherProfile.subjects = parsedSubjects;
-      console.log('Updated teacher subjects:', teacher.teacherProfile.subjects);
     } catch (error) {
-      console.error('Error parsing subjects:', error);
+
       throw new Error('Invalid subjects format');
     }
-  } else {
-    console.log('No subjects provided or empty subjects');
   }
   if (req.body.qualifications && req.body.qualifications.trim()) {
     teacher.teacherProfile.qualifications = typeof req.body.qualifications === 'string'
@@ -198,13 +190,12 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
   if (req.file) {
     // Use the S3 URL or local file path
     teacher.profilePicture = req.file.location || `http://localhost:5000/uploads/${req.file.filename}`;
-    console.log('Updated profile picture:', teacher.profilePicture);
+
   }
 
   const updatedTeacher = await teacher.save();
   
-  console.log('Teacher profile updated successfully');
-  console.log('Updated teacher data:', updatedTeacher.getPublicProfile());
+
   
   res.json({
     success: true,

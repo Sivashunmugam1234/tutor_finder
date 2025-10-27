@@ -32,7 +32,7 @@ const TeacherDashboard = () => {
             totalEarnings: 0
           });
         } catch (error) {
-          console.error('Error fetching teacher data:', error);
+
           setTeacherData(user);
           setStats({
             totalStudents: user.teacherProfile?.totalStudents || 0,

@@ -17,26 +17,26 @@ const Login = () => {
         setError('');
         
         try {
-            console.log('Login attempt:', { email, password });
+
             const userData = await login(email, password);
-            console.log('Login successful, user data:', userData);
+
             
             // Show success message
             toast.success('Login successful!');
             
             // Redirect based on user role to their dashboard
             if (userData?.role === 'teacher') {
-                console.log('Redirecting teacher to dashboard');
+
                 navigate('/teacher-dashboard');
             } else if (userData?.role === 'student') {
-                console.log('Redirecting student to home');
+
                 navigate('/');
             } else {
-                console.log('Unknown role, redirecting to home:', userData?.role);
+
                 navigate('/');
             }
         } catch (error) {
-            console.error('Login failed', error);
+
             
             // Handle different error messages
             const errorMessage = error.response?.data?.message || 

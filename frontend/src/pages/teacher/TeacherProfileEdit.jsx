@@ -94,8 +94,7 @@ const TeacherProfileEdit = () => {
     e.preventDefault();
     setLoading(true);
     
-    console.log('Form submission started');
-    console.log('Form data:', formData);
+
 
     try {
       const formDataToSend = new FormData();
@@ -176,11 +175,7 @@ const TeacherProfileEdit = () => {
         formDataToSend.append("profilePicture", profilePicture);
       }
 
-      console.log('Sending request to /teachers/profile');
-      console.log('FormData contents:');
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
+
       
       const response = await API.put("/teachers/profile", formDataToSend, {
         headers: {
@@ -188,7 +183,7 @@ const TeacherProfileEdit = () => {
         },
       });
       
-      console.log('Response received:', response.data);
+
 
       // Update user context with new data
       const updatedUser = response.data.data;
@@ -201,9 +196,7 @@ const TeacherProfileEdit = () => {
       
       toast.success("Profile updated successfully!");
     } catch (error) {
-      console.error('Profile update error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
+
       
       const errorMessage = error.response?.data?.message || 
                           error.message || 
@@ -213,12 +206,10 @@ const TeacherProfileEdit = () => {
       setError(errorMessage);
       
       // Show detailed error for debugging
-      if (error.response?.status === 400) {
-        console.error('Validation errors:', error.response.data.errors);
-      }
+
     } finally {
       setLoading(false);
-      console.log('Form submission completed');
+
     }
   };
 

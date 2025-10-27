@@ -120,7 +120,7 @@ const Profile = () => {
       setImagePreview(null);
       setFormData({ ...formData, password: "", confirmPassword: "" });
     } catch (error) {
-      console.error('Profile update error:', error);
+
       
       // Handle token expiration
       if (error.response?.status === 401) {

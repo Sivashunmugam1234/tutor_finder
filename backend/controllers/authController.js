@@ -20,9 +20,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     // Send welcome email (don't wait for it)
-    sendWelcomeEmail(email, name, role).catch(err => 
-      console.error('Failed to send welcome email:', err)
-    );
+    sendWelcomeEmail(email, name, role).catch(err => {});
 
     res.status(201).json({
       success: true,

@@ -108,7 +108,7 @@ const Register = () => {
         navigate('/student/dashboard');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+
       
       // Handle different error messages
       const errorMessage = error.response?.data?.message || 

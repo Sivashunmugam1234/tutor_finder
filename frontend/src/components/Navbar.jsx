@@ -32,9 +32,7 @@ const Navbar = () => {
     setProfilePicKey(prev => prev + 1);
   }, [user?.profilePicture]);
   
-  // Debug: Log the profile picture URL
-  console.log('Navbar - User:', user);
-  console.log('Navbar - Profile pic URL:', profilePic);
+
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-lg z-50">

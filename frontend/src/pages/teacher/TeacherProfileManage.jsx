@@ -108,7 +108,7 @@ const TeacherProfileManage = () => {
         return;
       }
       
-      console.log('Starting form submission with data:', formData);
+
       const formDataToSend = new FormData();
 
       // Basic info
@@ -128,17 +128,14 @@ const TeacherProfileManage = () => {
       }
 
       // Teacher profile fields
-      console.log('Processing subjects:', formData.subjects);
       if (formData.subjects && formData.subjects.trim()) {
         const subjectsArray = formData.subjects.split(',').map(s => s.trim()).filter(s => s);
-        console.log('Subjects array:', subjectsArray);
+
         if (subjectsArray.length > 0) {
           const subjectsJSON = JSON.stringify(subjectsArray);
-          console.log('Subjects JSON:', subjectsJSON);
+
           formDataToSend.append('subjects', subjectsJSON);
         }
-      } else {
-        console.log('No subjects to process');
       }
 
       if (formData.qualifications && formData.qualifications.trim()) {
@@ -176,10 +173,7 @@ const TeacherProfileManage = () => {
         formDataToSend.append('profilePicture', profilePicture);
       }
 
-      console.log('Sending FormData to server...');
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(`${key}:`, value);
-      }
+
       
       const response = await API.put('/teachers/profile', formDataToSend, {
         headers: {
@@ -187,7 +181,7 @@ const TeacherProfileManage = () => {
         },
       });
       
-      console.log('Server response:', response.data);
+
 
       const updatedUser = response.data.data;
       // Preserve the token from the current user
