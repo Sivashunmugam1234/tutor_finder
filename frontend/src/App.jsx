@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Login from './pages/Login';
@@ -27,10 +28,18 @@ const AppContent = () => {
   const location = useLocation();
   const showFooter = location.pathname === '/';
 
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+  }, [location.pathname]);
+
   return (
     <>
       <Navbar className="absolute" />
-      <main className="container mx-auto px-4 py-8">
+      <main className="pt-16">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />

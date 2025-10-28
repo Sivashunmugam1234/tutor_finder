@@ -39,6 +39,20 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  age: {
+    type: Number,
+    min: 1,
+    max: 100
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    trim: true
+  },
+  classOfStudying: {
+    type: String,
+    trim: true
+  },
   location: {
     city: String,
     state: String,

@@ -1,4 +1,3 @@
-// File: src/pages/auth/ForgotPassword.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api/axios';
@@ -25,20 +24,31 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Reset your password
-        </h2>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="relative max-w-md w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+            Reset Password
+          </h2>
+          <p className="mt-2 text-gray-600">
+            {!emailSent ? "Enter your email to receive a reset link" : "Check your email for instructions"}
+          </p>
+        </div>
+
+        {/* Form */}
+        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/20">
           {!emailSent ? (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address
                 </label>
                 <input
                   id="email"
@@ -47,8 +57,8 @@ const ForgotPassword = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white/50 backdrop-blur-sm"
+                  placeholder="Enter your email address"
                 />
               </div>
 
@@ -56,46 +66,60 @@ const ForgotPassword = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
                 >
-                  {loading ? 'Sending...' : 'Send reset link'}
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-3"></div>
+                      Sending...
+                    </div>
+                  ) : (
+                    'Send Reset Link'
+                  )}
                 </button>
               </div>
 
               <div className="text-center">
-                <Link to="/login" className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                  Back to sign in
+                <Link to="/login" className="text-sm font-semibold text-green-600 hover:text-green-500 transition-colors">
+                  ← Back to sign in
                 </Link>
               </div>
             </form>
           ) : (
-            <div className="text-center space-y-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center space-y-6">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
+              
               <div>
-                <h3 className="text-lg font-medium text-gray-900">Check your email</h3>
-                <p className="mt-2 text-sm text-gray-600">
-                  We've sent a password reset link to <span className="font-medium text-gray-900">{email}</span>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Check Your Email</h3>
+                <p className="text-gray-600">
+                  We've sent a password reset link to
+                </p>
+                <p className="font-semibold text-gray-900 mt-1">{email}</p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Didn't receive the email?</strong> Check your spam folder or try again.
                 </p>
               </div>
-              <div className="text-sm text-gray-500">
-                <p>Didn't receive the email?</p>
+
+              <div className="space-y-3">
                 <button
                   onClick={() => setEmailSent(false)}
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="w-full py-2 px-4 border border-green-300 rounded-xl text-green-700 bg-green-50 hover:bg-green-100 font-medium transition-colors"
                 >
-                  Try again
+                  Try Again
                 </button>
-              </div>
-              <div className="pt-4">
+                
                 <Link
                   to="/login"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                  className="block w-full py-2 px-4 text-center text-sm font-semibold text-green-600 hover:text-green-500 transition-colors"
                 >
-                  Back to sign in
+                  ← Back to sign in
                 </Link>
               </div>
             </div>
