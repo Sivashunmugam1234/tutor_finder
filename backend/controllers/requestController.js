@@ -108,7 +108,7 @@ exports.acceptRequest = asyncHandler(async (req, res) => {
     request.student.name,
     request.teacher.name,
     request.subject
-  ).catch(err => console.error('Failed to send acceptance email:', err));
+  ).catch(err => {});
 
   res.json({
     success: true,
@@ -150,7 +150,7 @@ exports.rejectRequest = asyncHandler(async (req, res) => {
     request.student.name,
     request.teacher.name,
     request.subject
-  ).catch(err => console.error('Failed to send rejection email:', err));
+  ).catch(err => {});
 
   res.json({
     success: true,

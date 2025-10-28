@@ -29,9 +29,27 @@ const userSchema = new mongoose.Schema({
   },
   profilePicture: { 
     type: String, 
-    default: 'https://via.placeholder.com/150'
+    default: function() {
+      return this.role === 'teacher' 
+        ? 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+        : 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png';
+    }
   },
   phone: {
+    type: String,
+    trim: true
+  },
+  age: {
+    type: Number,
+    min: 1,
+    max: 100
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    trim: true
+  },
+  classOfStudying: {
     type: String,
     trim: true
   },
@@ -68,11 +86,7 @@ const userSchema = new mongoose.Schema({
       min: 0,
       default: 0
     },
-    hourlyRate: {
-      type: Number,
-      min: 0,
-      default: 0
-    },
+
     availability: {
       type: [String],
       default: []
