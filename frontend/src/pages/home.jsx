@@ -216,7 +216,7 @@ const Home = () => {
                 </div>
                 <div className="flex items-center">
                   <Users className="w-5 h-5 text-yellow-400 mr-2" />
-                  <span>3+ Students</span>
+                  <span>3000+ Students</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-yellow-400 mr-2" />

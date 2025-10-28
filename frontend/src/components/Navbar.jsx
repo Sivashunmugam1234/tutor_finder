@@ -22,29 +22,26 @@ const Navbar = () => {
   // Default profile image (for students or teachers without photo)
   const defaultProfilePic = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-  // Use uploaded image only for teachers, default for students
-  const profilePic = imageError ? defaultProfilePic : 
-    (user?.role === 'teacher' ? getProfilePicture(user, defaultProfilePic) : defaultProfilePic);
+  // Use uploaded image for both teachers and students, default if not available
+  const profilePic = imageError ? defaultProfilePic : getProfilePicture(user, defaultProfilePic);
   
   // Reset image error when user changes
   React.useEffect(() => {
     setImageError(false);
     setProfilePicKey(prev => prev + 1);
   }, [user?.profilePicture]);
-  
-
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-lg z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-blue-600">
+          <Link to="/" className="text-2xl font-bold text-blue-600 flex-shrink-0 pl-0">
             TutorFinder
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex md:items-center space-x-6">
+          {/* Desktop Menu - All items aligned to right */}
+          <div className="hidden md:flex md:items-center space-x-6 ml-auto">
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">
               Home
             </Link>
@@ -79,16 +76,16 @@ const Navbar = () => {
                 {user?.role === "student" && (
                   <>
                     <Link
-                      to="/my-reviews"
-                      className="text-gray-700 hover:text-blue-600 font-medium"
-                    >
-                      My Reviews
-                    </Link>
-                    <Link
                       to="/my-requests"
                       className="text-gray-700 hover:text-blue-600 font-medium"
                     >
                       My Requests
+                    </Link>
+                    <Link
+                      to="/my-reviews"
+                      className="text-gray-700 hover:text-blue-600 font-medium"
+                    >
+                      My Reviews
                     </Link>
                   </>
                 )}
@@ -111,24 +108,22 @@ const Navbar = () => {
                 )}
 
                 {/* Profile Icon */}
-                <div className="relative flex items-center space-x-3">
-                  <Link to="/profile">
-                    <img
-                      key={profilePicKey}
-                      src={profilePic}
-                      alt="Profile"
-                      className="w-10 h-10 rounded-full object-cover border-2 border-blue-500 cursor-pointer hover:scale-105 transition"
-                      onError={() => setImageError(true)}
-                    />
-                  </Link>
+                <Link to="/profile">
+                  <img
+                    key={profilePicKey}
+                    src={profilePic}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-blue-500 cursor-pointer hover:scale-105 transition"
+                    onError={() => setImageError(true)}
+                  />
+                </Link>
 
-                  <button
-                    onClick={handleLogout}
-                    className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition"
-                  >
-                    Logout
-                  </button>
-                </div>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition"
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <>

@@ -30,6 +30,9 @@ exports.registerUser = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+        classOfStudying: user.classOfStudying,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -63,6 +66,9 @@ exports.loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+        classOfStudying: user.classOfStudying,
         profilePicture: user.profilePicture,
         token: generateToken(user._id)
       },
@@ -103,6 +109,19 @@ exports.updateProfile = asyncHandler(async (req, res) => {
     // Handle phone number properly - allow empty string to clear the field
     if ('phone' in req.body) {
       user.phone = req.body.phone;
+    }
+    
+    // Handle new student profile fields
+    if ('age' in req.body) {
+      user.age = req.body.age;
+    }
+    
+    if ('gender' in req.body) {
+      user.gender = req.body.gender;
+    }
+    
+    if ('classOfStudying' in req.body) {
+      user.classOfStudying = req.body.classOfStudying;
     }
     
     if (req.body.location) {

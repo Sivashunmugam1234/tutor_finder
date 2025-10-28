@@ -88,7 +88,7 @@ const AboutUs = () => {
   {/* Main content */}
   <div className="relative z-10 max-w-2xl px-5">
     <h1 className="text-5xl md:text-6xl font-extrabold mb-3 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-      About Found My Tutor
+      About Find My Tutor
     </h1>
     <div className="text-base italic opacity-80">
       <span>"Empowering Education Through Technology"</span>
@@ -141,7 +141,7 @@ const AboutUs = () => {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="text-lg">
               <p className="text-xl font-semibold text-gray-700 mb-6 leading-relaxed">
-                Found My Tutor is a revolutionary cloud-based platform that bridges 
+                Find My Tutor is a revolutionary cloud-based platform that bridges 
                 the gap between students seeking knowledge and experienced tutors ready to share 
                 their expertise.
               </p>
@@ -195,7 +195,7 @@ const AboutUs = () => {
             Meet the Team
           </h2>
           <p className="text-center text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            A passionate team of developers and innovators committed to transforming 
+            A passionate team of developers and innovatorss committed to transforming 
             the education landscape through technology.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
