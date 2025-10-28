@@ -1,10 +1,13 @@
 // File: src/pages/reviews/MyReviews.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import API from '../../api/axios'; // ✅ Correct import
+import API from '../../api/axios';
 import { toast } from 'react-toastify';
+import AuthContext from '../../context/AuthContext';
+import { fixS3ImageUrl } from '../../utils/imageUtils';
 
 const MyReviews = () => {
+  const { user } = useContext(AuthContext);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState(null);
@@ -16,7 +19,8 @@ const MyReviews = () => {
 
   const fetchMyReviews = async () => {
     try {
-      const response = await API.get('/students/my-reviews'); // ✅ Correct usage
+      const endpoint = user?.role === 'teacher' ? '/teachers/my-reviews' : '/students/my-reviews';
+      const response = await API.get(endpoint);
       setReviews(response.data.data);
     } catch (error) {
       toast.error('Failed to load reviews');
@@ -73,40 +77,63 @@ const MyReviews = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Reviews</h1>
-          <p className="text-gray-600">Manage your reviews for tutors</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {user?.role === 'teacher' ? 'Student Reviews' : 'My Reviews'}
+          </h1>
+          <p className="text-gray-600">
+            {user?.role === 'teacher' 
+              ? 'Reviews from your students' 
+              : 'Manage your reviews for tutors'
+            }
+          </p>
         </div>
 
         {reviews.length > 0 ? (
           <div className="space-y-6">
             {reviews.map((review) => (
               <div key={review._id} className="bg-white rounded-lg shadow-md p-6">
-                {/* Teacher Info */}
+                {/* User Info */}
                 <div className="flex items-start gap-4 mb-4">
                   <img
-                    src={review.teacher?.profilePicture || 'https://via.placeholder.com/60'}
-                    alt={review.teacher?.name}
+                    src={user?.role === 'teacher' 
+                      ? (fixS3ImageUrl(review.student?.profilePicture) || 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png')
+                      : (fixS3ImageUrl(review.teacher?.profilePicture) || 'https://via.placeholder.com/60')
+                    }
+                    alt={user?.role === 'teacher' ? review.student?.name : review.teacher?.name}
                     className="w-16 h-16 rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.src = user?.role === 'teacher' 
+                        ? 'https://cdn-icons-png.flaticon.com/512/3135/3135768.png'
+                        : 'https://via.placeholder.com/60';
+                    }}
                   />
                   <div className="flex-1">
-                    <Link
-                      to={`/teachers/${review.teacher?._id}`}
-                      className="text-xl font-semibold text-gray-900 hover:text-blue-600"
-                    >
-                      {review.teacher?.name}
-                    </Link>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {review.teacher?.teacherProfile?.subjects
-                        ?.slice(0, 3)
-                        .map((subject, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded"
-                          >
-                            {subject}
-                          </span>
-                        ))}
-                    </div>
+                    {user?.role === 'teacher' ? (
+                      <div className="text-xl font-semibold text-gray-900">
+                        {review.student?.name}
+                      </div>
+                    ) : (
+                      <Link
+                        to={`/teachers/${review.teacher?._id}`}
+                        className="text-xl font-semibold text-gray-900 hover:text-blue-600"
+                      >
+                        {review.teacher?.name}
+                      </Link>
+                    )}
+                    {user?.role === 'student' && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {review.teacher?.teacherProfile?.subjects
+                          ?.slice(0, 3)
+                          .map((subject, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded"
+                            >
+                              {subject}
+                            </span>
+                          ))}
+                      </div>
+                    )}
                   </div>
                   <span className="text-sm text-gray-500">
                     {new Date(review.createdAt).toLocaleDateString()}
@@ -181,20 +208,22 @@ const MyReviews = () => {
                     </div>
                     <p className="text-gray-700 mb-4">{review.comment}</p>
 
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(review)}
-                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 font-medium text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteReview(review._id)}
-                        className="px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 font-medium text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    {user?.role === 'student' && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(review)}
+                          className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 font-medium text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReview(review._id)}
+                          className="px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 font-medium text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -215,16 +244,23 @@ const MyReviews = () => {
                 d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">No reviews yet</h3>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              {user?.role === 'teacher' ? 'No student reviews yet' : 'No reviews yet'}
+            </h3>
             <p className="mt-2 text-gray-500">
-              Start by browsing tutors and leaving your first review!
+              {user?.role === 'teacher' 
+                ? 'Students will leave reviews after working with you.'
+                : 'Start by browsing tutors and leaving your first review!'
+              }
             </p>
-            <Link
-              to="/teachers"
-              className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-            >
-              Browse Tutors
-            </Link>
+            {user?.role === 'student' && (
+              <Link
+                to="/teachers"
+                className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+              >
+                Browse Tutors
+              </Link>
+            )}
           </div>
         )}
       </div>

@@ -19,10 +19,10 @@ const Navbar = () => {
 
   const isLoggedIn = isAuthenticated || !!user;
 
-  // Default profile image (for students or teachers without photo)
+  // Default profile image for all users
   const defaultProfilePic = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-  // Use uploaded image for both teachers and students, default if not available
+  // Use uploaded profile picture for all users, fallback to default if not available
   const profilePic = imageError ? defaultProfilePic : getProfilePicture(user, defaultProfilePic);
   
   // Reset image error when user changes
@@ -51,9 +51,11 @@ const Navbar = () => {
 
             {isLoggedIn ? (
               <>
-                <Link to="/teachers" className="text-gray-700 hover:text-blue-600 font-medium">
-                  Browse Tutors
-                </Link>
+                {user?.role === "student" && (
+                  <Link to="/teachers" className="text-gray-700 hover:text-blue-600 font-medium">
+                    Browse Tutors
+                  </Link>
+                )}
 
                 {user?.role === "teacher" && (
                   <Link
@@ -73,22 +75,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {user?.role === "student" && (
-                  <>
-                    <Link
-                      to="/my-requests"
-                      className="text-gray-700 hover:text-blue-600 font-medium"
-                    >
-                      My Requests
-                    </Link>
-                    <Link
-                      to="/my-reviews"
-                      className="text-gray-700 hover:text-blue-600 font-medium"
-                    >
-                      My Reviews
-                    </Link>
-                  </>
-                )}
+
 
                 {user?.role === "teacher" && (
                   <>
@@ -189,13 +176,15 @@ const Navbar = () => {
 
             {isLoggedIn ? (
               <>
-                <Link
-                  to="/teachers"
-                  className="block text-gray-700 hover:text-blue-600"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Browse Tutors
-                </Link>
+                {user?.role === "student" && (
+                  <Link
+                    to="/teachers"
+                    className="block text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Browse Tutors
+                  </Link>
+                )}
 
                 {user?.role === "teacher" && (
                   <Link
@@ -217,24 +206,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {user?.role === "student" && (
-                  <>
-                    <Link
-                      to="/my-reviews"
-                      className="block text-gray-700 hover:text-blue-600"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Reviews
-                    </Link>
-                    <Link
-                      to="/my-requests"
-                      className="block text-gray-700 hover:text-blue-600"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      My Requests
-                    </Link>
-                  </>
-                )}
+
 
                 {user?.role === "teacher" && (
                   <>
