@@ -101,15 +101,8 @@ const Register = () => {
         localStorage.setItem('token', token);
       }
 
-      localStorage.setItem('userInfo', JSON.stringify(userData));
-      
-      toast.success('Registration successful! Welcome aboard!');
-
-      if (userData.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      } else {
-        navigate('/student/dashboard');
-      }
+      toast.success('Registration successful! Please login to continue.');
+      navigate('/login');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 
                           error.message || 

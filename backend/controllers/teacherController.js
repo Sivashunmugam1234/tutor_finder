@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Review = require('../models/Review');
 const { asyncHandler, getPagination } = require('../utils/helpers');
+const StudentRequest = require('../models/StudentRequest');
 
 // @desc    Get all teachers with filtering and pagination
 // @route   GET /api/teachers
@@ -74,6 +75,36 @@ exports.getTeacherById = asyncHandler(async (req, res) => {
   const teacher = await User.findById(req.params.id).select('-password');
   
   if (teacher && teacher.role === 'teacher') {
+    // Ensure teacherProfile exists with proper defaults
+    if (!teacher.teacherProfile) {
+      teacher.teacherProfile = {
+        subjects: [],
+        qualifications: [],
+        experience: 0,
+        availability: [],
+        bio: '',
+        averageRating: 0,
+        totalReviews: 0,
+        totalStudents: 0,
+        languages: [],
+        teachingMode: ['both']
+      };
+      await teacher.save();
+    }
+
+    // Get actual count of accepted students
+    const StudentRequest = require('../models/StudentRequest');
+    const acceptedStudentsCount = await StudentRequest.countDocuments({
+      teacher: req.params.id,
+      status: 'accepted'
+    });
+
+    // Update totalStudents if it doesn't match actual count
+    if (teacher.teacherProfile.totalStudents !== acceptedStudentsCount) {
+      teacher.teacherProfile.totalStudents = acceptedStudentsCount;
+      await teacher.save();
+    }
+
     // Get reviews for this teacher
     const reviews = await Review.find({ teacher: req.params.id, isActive: true })
       .populate('student', 'name profilePicture')
@@ -115,7 +146,6 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
       subjects: [],
       qualifications: [],
       experience: 0,
-
       availability: [],
       bio: '',
       averageRating: 0,
@@ -124,7 +154,6 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
       languages: [],
       teachingMode: ['both']
     };
-
   }
 
   // Update basic info (only if provided)
@@ -194,8 +223,6 @@ exports.updateTeacherProfile = asyncHandler(async (req, res) => {
   }
 
   const updatedTeacher = await teacher.save();
-  
-
   
   res.json({
     success: true,

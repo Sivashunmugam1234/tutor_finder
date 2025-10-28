@@ -102,6 +102,13 @@ exports.acceptRequest = asyncHandler(async (req, res) => {
   request.respondedAt = new Date();
   await request.save();
 
+  // Update teacher's total students count
+  const teacher = await User.findById(request.teacher._id);
+  if (teacher && teacher.teacherProfile) {
+    teacher.teacherProfile.totalStudents = (teacher.teacherProfile.totalStudents || 0) + 1;
+    await teacher.save();
+  }
+
   // Send acceptance email to student
   sendRequestAcceptanceEmail(
     request.student.email,

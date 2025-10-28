@@ -14,38 +14,47 @@ const TeacherDashboard = () => {
     totalEarnings: 0
   });
   const [teacherData, setTeacherData] = useState(null);
-  const hasFetched = useRef(false);
+
+  const fetchLatestData = async () => {
+    if (user?._id) {
+      try {
+        const response = await API.get(`/teachers/${user._id}`);
+        const freshData = response.data.data;
+        setTeacherData(freshData);
+        
+        setStats({
+          totalStudents: freshData.teacherProfile?.totalStudents || 0,
+          totalReviews: freshData.teacherProfile?.totalReviews || 0,
+          averageRating: freshData.teacherProfile?.averageRating || 0,
+          totalEarnings: 0
+        });
+      } catch (error) {
+        setTeacherData(user);
+        setStats({
+          totalStudents: user.teacherProfile?.totalStudents || 0,
+          totalReviews: user.teacherProfile?.totalReviews || 0,
+          averageRating: user.teacherProfile?.averageRating || 0,
+          totalEarnings: 0
+        });
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchLatestData = async () => {
-      if (user?._id && !hasFetched.current) {
-        hasFetched.current = true;
-        try {
-          const response = await API.get(`/teachers/${user._id}`);
-          const freshData = response.data.data;
-          setTeacherData(freshData);
-          
-          setStats({
-            totalStudents: freshData.teacherProfile?.totalStudents || 0,
-            totalReviews: freshData.teacherProfile?.totalReviews || 0,
-            averageRating: freshData.teacherProfile?.averageRating || 0,
-            totalEarnings: 0
-          });
-        } catch (error) {
-
-          setTeacherData(user);
-          setStats({
-            totalStudents: user.teacherProfile?.totalStudents || 0,
-            totalReviews: user.teacherProfile?.totalReviews || 0,
-            averageRating: user.teacherProfile?.averageRating || 0,
-            totalEarnings: 0
-          });
-        }
-      }
-    };
-
     fetchLatestData();
   }, [user?._id]);
+
+  // Refresh data when returning to dashboard
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchLatestData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   const StatCard = ({ icon: Icon, title, value, color, bgColor, trend }) => (
     <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
@@ -156,18 +165,7 @@ const TeacherDashboard = () => {
                   </div>
                 </Link>
                 
-                <Link
-                  to="/teachers"
-                  className="group flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all duration-300 transform hover:scale-105"
-                >
-                  <div className="p-3 bg-purple-500 rounded-lg group-hover:bg-purple-600 transition-colors">
-                    <BookOpen className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-4">
-                    <span className="text-purple-700 font-semibold text-lg">Browse Tutors</span>
-                    <p className="text-purple-600 text-sm">Explore other teachers</p>
-                  </div>
-                </Link>
+
                 
                 <Link
                   to={`/teacher/${user?._id}`}
